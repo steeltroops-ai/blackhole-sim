@@ -17,8 +17,6 @@
 #include <fcntl.h>
 #endif
 
-using namespace BlackHoleSim;
-
 /**
  * @brief Print application banner and information
  */
@@ -84,7 +82,7 @@ void PrintVersion() {
  * @param config Configuration structure to fill
  * @return True if parsing successful, false if should exit
  */
-bool ParseArguments(int argc, char* argv[], SimulationConfig& config) {
+bool ParseArguments(int argc, char* argv[], BlackHoleSim::SimulationConfig& config) {
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
         
@@ -201,7 +199,7 @@ int main(int argc, char* argv[]) {
         PrintBanner();
         
         // Create default configuration
-        SimulationConfig config;
+        BlackHoleSim::SimulationConfig config;
         
         // Parse command line arguments
         if (!ParseArguments(argc, argv, config)) {
@@ -210,7 +208,7 @@ int main(int argc, char* argv[]) {
         
         // Create and initialize simulation manager
         std::cout << "Initializing simulation...\n";
-        SimulationManager simulation;
+        BlackHoleSim::SimulationManager simulation;
         
         if (!simulation.Initialize(config)) {
             std::cerr << "Error: Failed to initialize simulation\n";

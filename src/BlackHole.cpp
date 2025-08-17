@@ -4,9 +4,12 @@
  */
 
 #include "BlackHole.hpp"
+#include "Vector3.hpp"
 #include <cmath>
 #include <algorithm>
 #include <stdexcept>
+#include <limits>
+#include <utility>
 
 namespace BlackHoleSim {
 
@@ -16,7 +19,7 @@ const double c = 299792458.0;  // Speed of light (m/s)
 const double c2 = c * c;       // Speed of light squared
 const double c4 = c2 * c2;     // Speed of light to the fourth power
 
-BlackHole::BlackHole(double mass, const Vector3& position)
+BlackHole::BlackHole(double mass, const std::array<double, 3>& position)
     : m_mass(mass)
     , m_position(position)
     , m_schwarzschildRadius(0.0)
@@ -42,9 +45,7 @@ void BlackHole::SetMass(double mass) {
     UpdateDerivedQuantities();
 }
 
-void BlackHole::SetPosition(const Vector3& position) {
-    m_position = position;
-}
+
 
 void BlackHole::UpdateDerivedQuantities() {
     // Schwarzschild radius: rs = 2GM/c²
@@ -99,7 +100,7 @@ double BlackHole::GetGravitationalPotential(double r) const {
     return -G * m_mass / r;
 }
 
-double BlackHole::GetTimeDilation(double r) const {
+double BlackHole::GetTimeDilationFactor(double r) const {
     if (r <= m_schwarzschildRadius) {
         return std::numeric_limits<double>::infinity();
     }
@@ -108,16 +109,15 @@ double BlackHole::GetTimeDilation(double r) const {
     return std::sqrt(1.0 - m_schwarzschildRadius / r);
 }
 
-double BlackHole::GetGravitationalRedshift(double r_source, double r_observer) const {
-    if (r_source <= m_schwarzschildRadius || r_observer <= m_schwarzschildRadius) {
+double BlackHole::GetRedshiftFactor(double r) const {
+    if (r <= m_schwarzschildRadius) {
         return std::numeric_limits<double>::infinity();
     }
     
-    // Redshift factor: √((1 - rs/r_obs)/(1 - rs/r_src))
-    double factor_source = 1.0 - m_schwarzschildRadius / r_source;
-    double factor_observer = 1.0 - m_schwarzschildRadius / r_observer;
+    // Redshift factor for observer at infinity: √(1 - rs/r)
+    double factor = 1.0 - m_schwarzschildRadius / r;
     
-    return std::sqrt(factor_observer / factor_source);
+    return std::sqrt(factor);
 }
 
 double BlackHole::GetEscapeVelocity(double r) const {
@@ -151,7 +151,8 @@ bool BlackHole::IsInsideISCO(const Vector3& position) const {
 
 Vector3 BlackHole::GetTidalAcceleration(const Vector3& position, const Vector3& separation) const {
     // Calculate tidal acceleration due to differential gravitational field
-    Vector3 r_vec = position - m_position;
+    Vector3 bh_position(m_position);
+    Vector3 r_vec = position - bh_position;
     double r = r_vec.Magnitude();
     
     if (r <= m_schwarzschildRadius || r == 0.0) {
@@ -281,7 +282,8 @@ std::array<double, 4> BlackHole::GetChristoffelSymbol(int mu, int nu, int lambda
 }
 
 Vector3 BlackHole::GetGravitationalField(const Vector3& position) const {
-    Vector3 r_vec = position - m_position;
+    Vector3 bh_position(m_position);
+    Vector3 r_vec = position - bh_position;
     double r = r_vec.Magnitude();
     
     if (r == 0.0) {

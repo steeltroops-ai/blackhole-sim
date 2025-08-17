@@ -23,65 +23,39 @@ const double LAMBDA_VIOLET = 380e-9;    // 380 nm
 const double LAMBDA_INFRARED = 1000e-9; // 1000 nm
 const double LAMBDA_ULTRAVIOLET = 300e-9; // 300 nm
 
-LightRay::LightRay()
-    : m_position(0.0, 0.0, 0.0)
-    , m_direction(1.0, 0.0, 0.0)
-    , m_frequency(c / LAMBDA_GREEN) // Default to green light
-    , m_intensity(1.0)
-    , m_type(Type::DIRECT)
-    , m_status(Status::ACTIVE)
-    , m_maxPathPoints(1000)
-{
-    m_path.reserve(m_maxPathPoints);
-    m_direction = m_direction.Normalized();
-}
+// Default constructor removed - not declared in header
 
-LightRay::LightRay(const Vector3& position, const Vector3& direction, double frequency, Type type)
+LightRay::LightRay(const std::array<double, 3>& position,
+                   const std::array<double, 3>& direction,
+                   double frequency,
+                   double intensity,
+                   Type type)
     : m_position(position)
-    , m_direction(direction.Normalized())
+    , m_direction(direction)
     , m_frequency(frequency)
-    , m_intensity(1.0)
+    , m_intensity(intensity)
     , m_type(type)
     , m_status(Status::ACTIVE)
-    , m_maxPathPoints(1000)
+    , m_path()
+    , m_maxPathLength(1000)
 {
-    m_path.reserve(m_maxPathPoints);
+    // Normalize direction
+    Vector3 dir(direction[0], direction[1], direction[2]);
+    Vector3 normalized = dir.Normalized();
+    m_direction = normalized.ToArray();
+    
+    m_path.reserve(m_maxPathLength);
     
     // Add initial position to path
     AddToPath(m_position);
 }
 
-LightRay::LightRay(const Vector3& position, const Vector3& direction, double wavelength_nm, Type type)
-    : m_position(position)
-    , m_direction(direction.Normalized())
-    , m_frequency(c / (wavelength_nm * 1e-9)) // Convert nm to m, then to frequency
-    , m_intensity(1.0)
-    , m_type(type)
-    , m_status(Status::ACTIVE)
-    , m_maxPathPoints(1000)
-{
-    m_path.reserve(m_maxPathPoints);
-    
-    // Add initial position to path
-    AddToPath(m_position);
-}
-
-LightRay::~LightRay() {
-    // Destructor - nothing special needed
-}
+// Destructor - using default implementation
 
 // Getters
-Vector3 LightRay::GetPosition() const {
-    return m_position;
-}
+// GetPosition and GetDirection are implemented inline in the header
 
-Vector3 LightRay::GetDirection() const {
-    return m_direction;
-}
-
-double LightRay::GetFrequency() const {
-    return m_frequency;
-}
+// GetFrequency is implemented inline in the header
 
 double LightRay::GetWavelength() const {
     return c / m_frequency;
@@ -91,42 +65,25 @@ double LightRay::GetWavelengthNm() const {
     return (c / m_frequency) * 1e9; // Convert to nanometers
 }
 
-double LightRay::GetIntensity() const {
-    return m_intensity;
-}
+// GetIntensity is implemented inline in the header
 
-LightRay::Type LightRay::GetType() const {
-    return m_type;
-}
-
-LightRay::Status LightRay::GetStatus() const {
-    return m_status;
-}
+// GetType and GetStatus are implemented inline in the header
 
 bool LightRay::IsActive() const {
     return m_status == Status::ACTIVE;
 }
 
-const std::vector<Vector3>& LightRay::GetPath() const {
-    return m_path;
+// GetPath is implemented inline in the header
+// GetMaxPathPoints -> GetMaxPathLength is implemented inline in the header
+// SetPosition is implemented inline in the header
+
+void LightRay::SetDirection(const std::array<double, 3>& direction) {
+    Vector3 dir(direction[0], direction[1], direction[2]);
+    Vector3 normalized = dir.Normalized();
+    m_direction = normalized.ToArray();
 }
 
-size_t LightRay::GetMaxPathPoints() const {
-    return m_maxPathPoints;
-}
-
-// Setters
-void LightRay::SetPosition(const Vector3& position) {
-    m_position = position;
-}
-
-void LightRay::SetDirection(const Vector3& direction) {
-    m_direction = direction.Normalized();
-}
-
-void LightRay::SetFrequency(double frequency) {
-    m_frequency = std::max(1e10, frequency); // Minimum frequency to avoid issues
-}
+// SetFrequency is implemented inline in the header
 
 void LightRay::SetWavelength(double wavelength) {
     if (wavelength > 0.0) {
@@ -140,30 +97,8 @@ void LightRay::SetWavelengthNm(double wavelength_nm) {
     }
 }
 
-void LightRay::SetIntensity(double intensity) {
-    m_intensity = std::max(0.0, intensity);
-}
-
-void LightRay::SetType(Type type) {
-    m_type = type;
-}
-
-void LightRay::SetStatus(Status status) {
-    m_status = status;
-}
-
-void LightRay::SetMaxPathPoints(size_t maxPoints) {
-    m_maxPathPoints = maxPoints;
-    
-    // Resize path if necessary
-    if (m_path.size() > maxPoints) {
-        // Keep the most recent points
-        m_path.erase(m_path.begin(), 
-                    m_path.begin() + (m_path.size() - maxPoints));
-    }
-    
-    m_path.reserve(maxPoints);
-}
+// SetIntensity, SetType, and SetStatus are implemented inline in the header
+// SetMaxPathLength is implemented inline in the header
 
 // Physics calculations
 double LightRay::GetPhotonEnergy() const {
@@ -175,10 +110,11 @@ double LightRay::GetPhotonMomentum() const {
 }
 
 Vector3 LightRay::GetPhotonMomentumVector() const {
-    return m_direction * GetPhotonMomentum();
+    Vector3 direction(m_direction[0], m_direction[1], m_direction[2]);
+    return direction * GetPhotonMomentum();
 }
 
-double LightRay::CalculateRedshift(double initialFrequency, double finalFrequency) {
+double LightRay::CalculateRedshift(double initialFrequency, double finalFrequency) const {
     if (finalFrequency > 0.0 && initialFrequency > 0.0) {
         return (initialFrequency - finalFrequency) / finalFrequency;
     }
@@ -191,87 +127,92 @@ double LightRay::CalculateRedshift(double initialFrequency) const {
 
 double LightRay::GetImpactParameter(const Vector3& center) const {
     // Calculate impact parameter for light ray relative to center
-    Vector3 r = m_position - center;
-    Vector3 L = r.Cross(m_direction); // Angular momentum vector
+    Vector3 position_vec(m_position);
+    Vector3 direction_vec(m_direction);
+    Vector3 r = position_vec - center;
+    Vector3 L = r.Cross(direction_vec); // Angular momentum vector
     return L.Magnitude();
 }
 
 double LightRay::GetConservedEnergy(const Vector3& center, double centralMass) const {
     // For photons in Schwarzschild metric: E = (1 - rs/r) * frequency
-    double r = (m_position - center).Magnitude();
+    Vector3 position_vec(m_position);
+    double r = (position_vec - center).Magnitude();
     double rs = 2.0 * 6.67430e-11 * centralMass / (c * c); // Schwarzschild radius
     
     if (r > rs && r > 0.0) {
-        return (1.0 - rs / r) * GetPhotonEnergy();
+        return (1.0 - rs / r) * GetFrequency();
     }
     
-    return GetPhotonEnergy();
+    return GetFrequency();
 }
 
 double LightRay::GetConservedAngularMomentum(const Vector3& center) const {
     // L = r * sin(θ) * (dφ/dt) for photons
-    Vector3 r_vec = m_position - center;
+    Vector3 position_vec(m_position);
+    Vector3 direction_vec(m_direction);
+    Vector3 r_vec = position_vec - center;
     double r = r_vec.Magnitude();
     
     if (r > 0.0) {
         // Calculate angular component of direction
         Vector3 r_hat = r_vec / r;
-        Vector3 tangential = m_direction - r_hat * m_direction.Dot(r_hat);
-        return r * tangential.Magnitude() * GetPhotonMomentum();
+        Vector3 tangential = direction_vec - r_hat * direction_vec.Dot(r_hat);
+        return r * tangential.Magnitude() * GetWavelength(); // Use wavelength as momentum proxy
     }
     
     return 0.0;
 }
 
 // Color and rendering
-Vector3 LightRay::FrequencyToRGB(double frequency) {
+std::array<float, 3> LightRay::FrequencyToRGB(double frequency) {
     double wavelength = c / frequency; // in meters
     double wavelength_nm = wavelength * 1e9; // convert to nanometers
     
     return WavelengthToRGB(wavelength_nm);
 }
 
-Vector3 LightRay::WavelengthToRGB(double wavelength_nm) {
-    Vector3 rgb(0.0, 0.0, 0.0);
+std::array<float, 3> LightRay::WavelengthToRGB(double wavelength_nm) {
+    std::array<float, 3> rgb = {0.0f, 0.0f, 0.0f};
     
     if (wavelength_nm >= 380 && wavelength_nm <= 750) {
         // Visible spectrum
         if (wavelength_nm >= 380 && wavelength_nm < 440) {
             // Violet to Blue
             double t = (wavelength_nm - 380) / (440 - 380);
-            rgb.x = 0.5 - 0.5 * t; // Red component
-            rgb.y = 0.0;           // Green component
-            rgb.z = 1.0;           // Blue component
+            rgb[0] = 0.5 - 0.5 * t; // Red component
+            rgb[1] = 0.0;           // Green component
+            rgb[2] = 1.0;           // Blue component
         } else if (wavelength_nm >= 440 && wavelength_nm < 490) {
             // Blue to Cyan
             double t = (wavelength_nm - 440) / (490 - 440);
-            rgb.x = 0.0;           // Red component
-            rgb.y = t;             // Green component
-            rgb.z = 1.0;           // Blue component
+            rgb[0] = 0.0;           // Red component
+            rgb[1] = t;             // Green component
+            rgb[2] = 1.0;           // Blue component
         } else if (wavelength_nm >= 490 && wavelength_nm < 510) {
             // Cyan to Green
             double t = (wavelength_nm - 490) / (510 - 490);
-            rgb.x = 0.0;           // Red component
-            rgb.y = 1.0;           // Green component
-            rgb.z = 1.0 - t;       // Blue component
+            rgb[0] = 0.0;           // Red component
+            rgb[1] = 1.0;           // Green component
+            rgb[2] = 1.0 - t;       // Blue component
         } else if (wavelength_nm >= 510 && wavelength_nm < 580) {
             // Green to Yellow
             double t = (wavelength_nm - 510) / (580 - 510);
-            rgb.x = t;             // Red component
-            rgb.y = 1.0;           // Green component
-            rgb.z = 0.0;           // Blue component
+            rgb[0] = t;             // Red component
+            rgb[1] = 1.0;           // Green component
+            rgb[2] = 0.0;           // Blue component
         } else if (wavelength_nm >= 580 && wavelength_nm < 645) {
             // Yellow to Orange
             double t = (wavelength_nm - 580) / (645 - 580);
-            rgb.x = 1.0;           // Red component
-            rgb.y = 1.0 - 0.5 * t; // Green component
-            rgb.z = 0.0;           // Blue component
+            rgb[0] = 1.0;           // Red component
+            rgb[1] = 1.0 - 0.5 * t; // Green component
+            rgb[2] = 0.0;           // Blue component
         } else if (wavelength_nm >= 645 && wavelength_nm <= 750) {
             // Orange to Red
             double t = (wavelength_nm - 645) / (750 - 645);
-            rgb.x = 1.0;           // Red component
-            rgb.y = 0.5 - 0.5 * t; // Green component
-            rgb.z = 0.0;           // Blue component
+            rgb[0] = 1.0;           // Red component
+            rgb[1] = 0.5 - 0.5 * t; // Green component
+            rgb[2] = 0.0;           // Blue component
         }
         
         // Apply intensity falloff at edges of visible spectrum
@@ -282,52 +223,54 @@ Vector3 LightRay::WavelengthToRGB(double wavelength_nm) {
             intensity = 0.3 + 0.7 * (750 - wavelength_nm) / (750 - 700);
         }
         
-        rgb = rgb * intensity;
+        rgb[0] *= intensity;
+        rgb[1] *= intensity;
+        rgb[2] *= intensity;
     } else if (wavelength_nm < 380) {
         // Ultraviolet - represent as dim violet
-        rgb = Vector3(0.3, 0.0, 0.3);
+        rgb[0] = 0.3f;
+        rgb[1] = 0.0f;
+        rgb[2] = 0.3f;
     } else if (wavelength_nm > 750) {
         // Infrared - represent as dim red
-        rgb = Vector3(0.3, 0.0, 0.0);
+        rgb[0] = 0.3f;
+        rgb[1] = 0.0f;
+        rgb[2] = 0.0f;
     }
     
     // Clamp values to [0, 1]
-    rgb.x = std::clamp(rgb.x, 0.0, 1.0);
-    rgb.y = std::clamp(rgb.y, 0.0, 1.0);
-    rgb.z = std::clamp(rgb.z, 0.0, 1.0);
+    rgb[0] = std::min(std::max(rgb[0], 0.0f), 1.0f);
+    rgb[1] = std::min(std::max(rgb[1], 0.0f), 1.0f);
+    rgb[2] = std::min(std::max(rgb[2], 0.0f), 1.0f);
     
     return rgb;
 }
 
-Vector3 LightRay::GetColor() const {
-    Vector3 baseColor = FrequencyToRGB(m_frequency);
+std::array<float, 4> LightRay::GetColor() const {
+    std::array<float, 3> baseColor = FrequencyToRGB(m_frequency);
     
     // Modulate by intensity
-    double intensityFactor = std::clamp(m_intensity, 0.0, 1.0);
+    double intensityFactor = std::min(std::max(m_intensity, 0.0), 1.0);
     
-    return baseColor * intensityFactor;
+    return {static_cast<float>(baseColor[0] * intensityFactor), 
+            static_cast<float>(baseColor[1] * intensityFactor), 
+            static_cast<float>(baseColor[2] * intensityFactor), 
+            1.0f};
 }
 
-Vector4 LightRay::GetColorWithAlpha(double alpha) const {
-    Vector3 color = GetColor();
-    return Vector4(color.x, color.y, color.z, std::clamp(alpha, 0.0, 1.0));
-}
+
 
 // Path management
 void LightRay::AddToPath(const Vector3& position) {
-    m_path.push_back(position);
+    m_path.push_back(position.ToArray());
     
     // Remove oldest points if we exceed the maximum
-    if (m_path.size() > m_maxPathPoints) {
+    if (m_path.size() > m_maxPathLength) {
         m_path.erase(m_path.begin());
     }
 }
 
-void LightRay::ClearPath() {
-    m_path.clear();
-    // Add current position as the starting point
-    m_path.push_back(m_position);
-}
+
 
 void LightRay::ReservePathCapacity(size_t capacity) {
     m_path.reserve(capacity);
@@ -339,7 +282,8 @@ std::string LightRay::GetTypeString() const {
         case Type::DIRECT: return "Direct";
         case Type::LENSED: return "Lensed";
         case Type::SCATTERED: return "Scattered";
-        case Type::EMITTED: return "Emitted";
+        case Type::BACKGROUND: return "Background";
+        case Type::CUSTOM: return "Custom";
         default: return "Unknown";
     }
 }
@@ -349,13 +293,13 @@ std::string LightRay::GetStatusString() const {
         case Status::ACTIVE: return "Active";
         case Status::ESCAPED: return "Escaped";
         case Status::ABSORBED: return "Absorbed";
-        case Status::SCATTERED: return "Scattered";
+        case Status::TERMINATED: return "Terminated";
         default: return "Unknown";
     }
 }
 
 std::string LightRay::GetSpectralRegion() const {
-    double wavelength_nm = GetWavelengthNm();
+    double wavelength_nm = GetWavelength() * 1e9; // Convert from meters to nanometers
     
     if (wavelength_nm < 10) {
         return "Gamma Ray";
@@ -385,8 +329,8 @@ std::string LightRay::GetSpectralRegion() const {
 }
 
 void LightRay::Reset(const Vector3& position, const Vector3& direction, double frequency) {
-    m_position = position;
-    m_direction = direction.Normalized();
+    m_position = position.ToArray();
+    m_direction = direction.Normalized().ToArray();
     m_frequency = frequency;
     m_intensity = 1.0;
     m_status = Status::ACTIVE;
@@ -419,7 +363,9 @@ double LightRay::GetDistanceTraveled() const {
     
     double totalDistance = 0.0;
     for (size_t i = 1; i < m_path.size(); ++i) {
-        totalDistance += (m_path[i] - m_path[i-1]).Magnitude();
+        Vector3 current(m_path[i]);
+        Vector3 previous(m_path[i-1]);
+        totalDistance += (current - previous).Magnitude();
     }
     
     return totalDistance;
@@ -434,13 +380,15 @@ Vector3 LightRay::GetInitialPosition() const {
 
 Vector3 LightRay::GetInitialDirection() const {
     if (m_path.size() >= 2) {
-        Vector3 direction = m_path[1] - m_path[0];
+        Vector3 pos1(m_path[1]);
+        Vector3 pos0(m_path[0]);
+        Vector3 direction = pos1 - pos0;
         double magnitude = direction.Magnitude();
         if (magnitude > 1e-10) {
             return direction / magnitude;
         }
     }
-    return m_direction;
+    return Vector3(m_direction);
 }
 
 bool LightRay::HasTraveledDistance(double minDistance) const {
@@ -450,7 +398,7 @@ bool LightRay::HasTraveledDistance(double minDistance) const {
 // Static utility methods
 LightRay LightRay::CreateFromWavelength(const Vector3& position, const Vector3& direction, 
                                        double wavelength_nm, Type type) {
-    return LightRay(position, direction, wavelength_nm, type);
+    return LightRay(position.ToArray(), direction.ToArray(), wavelength_nm, 1.0, type);
 }
 
 LightRay LightRay::CreateRedLight(const Vector3& position, const Vector3& direction) {

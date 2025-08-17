@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <chrono>
 #include <thread>
 #include <algorithm>
@@ -45,7 +46,7 @@ SimulationManager::SimulationManager()
     , m_timeStep(0.01)
     , m_simulationTime(0.0)
     , m_frameCount(0)
-    , m_lastFrameTime(0.0)
+    , m_lastFrameTime(std::chrono::high_resolution_clock::now())
     , m_deltaTime(0.0)
     , m_fps(0.0)
     , m_targetFPS(60.0)
@@ -54,9 +55,6 @@ SimulationManager::SimulationManager()
     , m_performanceMode(PerformanceMode::BALANCED)
     , m_showPerformanceStats(false)
 {
-    // Initialize timing
-    auto now = std::chrono::high_resolution_clock::now();
-    m_lastFrameTime = std::chrono::duration<double>(now.time_since_epoch()).count();
 }
 
 SimulationManager::~SimulationManager() {
@@ -138,51 +136,22 @@ bool SimulationManager::InitializeSubsystems() {
     return true;
 }
 
-bool SimulationManager::InitializeSubsystems() {
-    // Initialize Physics Engine
-    std::cout << "  Initializing Physics Engine...\n";
-    m_physicsEngine = std::make_unique<PhysicsEngine>();
-    if (!m_physicsEngine->Initialize()) {
-        std::cerr << "    Failed to initialize Physics Engine\n";
-        return false;
-    }
-    
-    // Initialize Rendering Engine
-    std::cout << "  Initializing Rendering Engine...\n";
-    m_renderingEngine = std::make_unique<RenderingEngine>();
-    if (!m_renderingEngine->Initialize(m_config.windowWidth, m_config.windowHeight, 
-                                       "Black Hole Simulation", m_config.fullscreen)) {
-        std::cerr << "    Failed to initialize Rendering Engine\n";
-        return false;
-    }
-    
-    // Configure rendering settings
-    m_renderingEngine->SetVSync(m_config.vsync);
-    m_renderingEngine->SetMSAA(m_config.msaaSamples);
-    
-    // Initialize Input System
-    std::cout << "  Initializing Input System...\n";
-    m_inputSystem = std::make_unique<InputSystem>();
-    if (!m_inputSystem->Initialize(m_renderingEngine->GetWindow())) {
-        std::cerr << "    Failed to initialize Input System\n";
-        return false;
-    }
-    
-    return true;
-}
+
 
 void SimulationManager::SetupDefaultScene() {
     std::cout << "  Setting up default scene...\n";
     
     // Create black hole (1 solar mass at origin)
     const double solarMass = 1.989e30; // kg
-    m_blackHole.reset(new BlackHole(solarMass, Vector3(0.0, 0.0, 0.0)));
+    m_blackHole.reset(new BlackHole(solarMass, {0.0, 0.0, 0.0}));
     
     // Create accretion disk
     double innerRadius = 3.0 * m_blackHole->GetSchwarzschildRadius();
     double outerRadius = 20.0 * m_blackHole->GetSchwarzschildRadius();
     double accretionRate = 0.1 * solarMass;
-    m_accretionDisk.reset(new AccretionDisk(*m_blackHole, innerRadius, outerRadius, accretionRate));
+    // Create shared_ptr from the existing BlackHole
+    std::shared_ptr<BlackHole> blackHolePtr(m_blackHole.get(), [](BlackHole*){});
+    m_accretionDisk.reset(new AccretionDisk(blackHolePtr, innerRadius, outerRadius, accretionRate));
     
     // Add some test particles
     AddTestParticles();

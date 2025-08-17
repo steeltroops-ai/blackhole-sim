@@ -73,6 +73,13 @@ public:
         return *this;
     }
     
+    Vector3& operator/=(double scalar) {
+        m_data[0] /= scalar;
+        m_data[1] /= scalar;
+        m_data[2] /= scalar;
+        return *this;
+    }
+    
     // Dot product
     double Dot(const Vector3& other) const {
         return m_data[0] * other.m_data[0] + 

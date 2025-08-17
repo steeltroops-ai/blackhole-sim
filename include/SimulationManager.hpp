@@ -14,6 +14,15 @@
 namespace BlackHoleSim {
 
 /**
+ * @brief Performance mode enumeration
+ */
+enum class PerformanceMode {
+    HIGH_QUALITY,
+    BALANCED,
+    HIGH_PERFORMANCE
+};
+
+/**
  * @brief Configuration structure for simulation parameters
  */
 struct SimulationConfig {
@@ -141,7 +150,6 @@ public:
     void TogglePause();
     void Step();
     void RenderUI();
-    void UpdatePhysics();
     void UpdateTiming();
     void SetupInputCallbacks();
     void HandleInputAction(InputSystem::Action action, float value);
@@ -169,6 +177,9 @@ private:
     bool m_isPaused;
     double m_timeStep;
     double m_simulationTime;
+    double m_maxTimeStep;
+    double m_minTimeStep;
+    PerformanceMode m_performanceMode;
     
     // Performance tracking
     std::chrono::high_resolution_clock::time_point m_lastFrameTime;
@@ -214,6 +225,12 @@ private:
      * @brief Initialize default simulation objects
      */
     void InitializeSimulationObjects();
+    
+    /**
+     * @brief Initialize core subsystems (physics, rendering, input)
+     * @return true if successful, false otherwise
+     */
+    bool InitializeSubsystems();
 };
 
 } // namespace BlackHoleSim

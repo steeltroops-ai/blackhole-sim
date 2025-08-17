@@ -3,6 +3,7 @@
 #include <array>
 #include <vector>
 #include <complex>
+#include "Vector3.hpp"
 
 namespace BlackHoleSim {
 
@@ -49,11 +50,143 @@ public:
              double intensity = 1.0,
              Type type = Type::DIRECT);
 
+    // Static factory methods
+    /**
+     * @brief Create red light ray
+     * @param position Starting position
+     * @param direction Direction vector
+     * @return Red light ray
+     */
+    static LightRay CreateRedLight(const Vector3& position, const Vector3& direction);
+
+    /**
+     * @brief Create green light ray
+     * @param position Starting position
+     * @param direction Direction vector
+     * @return Green light ray
+     */
+    static LightRay CreateGreenLight(const Vector3& position, const Vector3& direction);
+
+    /**
+     * @brief Create blue light ray
+     * @param position Starting position
+     * @param direction Direction vector
+     * @return Blue light ray
+     */
+    static LightRay CreateBlueLight(const Vector3& position, const Vector3& direction);
+
+    /**
+     * @brief Create white light ray
+     * @param position Starting position
+     * @param direction Direction vector
+     * @return White light ray
+     */
+    static LightRay CreateWhiteLight(const Vector3& position, const Vector3& direction);
+
+    /**
+     * @brief Create spectrum of light rays
+     * @param position Starting position
+     * @param direction Direction vector
+     * @param minWavelength_nm Minimum wavelength in nm
+     * @param maxWavelength_nm Maximum wavelength in nm
+     * @param numRays Number of rays to create
+     * @return Vector of light rays
+     */
+    static std::vector<LightRay> CreateSpectrum(const Vector3& position, const Vector3& direction,
+                                               double minWavelength_nm, double maxWavelength_nm,
+                                               int numRays);
+
+    /**
+     * @brief Create light ray from wavelength
+     * @param position Starting position
+     * @param direction Direction vector
+     * @param wavelength_nm Wavelength in nanometers
+     * @param type Ray type
+     * @return Light ray with specified wavelength
+     */
+    static LightRay CreateFromWavelength(const Vector3& position, const Vector3& direction,
+                                        double wavelength_nm, Type type = Type::DIRECT);
+
     /**
      * @brief Get current position
      * @return Position array [x, y, z] in meters
      */
     const std::array<double, 3>& GetPosition() const { return m_position; }
+
+    /**
+     * @brief Get initial position
+     * @return Initial position as Vector3
+     */
+    Vector3 GetInitialPosition() const;
+
+    /**
+     * @brief Get initial direction
+     * @return Initial direction as Vector3
+     */
+    Vector3 GetInitialDirection() const;
+
+    /**
+     * @brief Check if ray has traveled minimum distance
+     * @param minDistance Minimum distance to check
+     * @return True if traveled distance exceeds minimum
+     */
+    bool HasTraveledDistance(double minDistance) const;
+
+    /**
+     * @brief Get total distance traveled by the ray
+     * @return Total distance in meters
+     */
+    double GetDistanceTraveled() const;
+
+    /**
+     * @brief Reset ray with new parameters
+     * @param position New starting position
+     * @param direction New direction
+     * @param frequency New frequency
+     */
+    void Reset(const Vector3& position, const Vector3& direction, double frequency);
+
+    /**
+     * @brief Apply redshift to the ray
+     * @param redshiftFactor Redshift factor to apply
+     */
+    void ApplyRedshift(double redshiftFactor);
+
+    /**
+     * @brief Apply blueshift to the ray
+     * @param blueshiftFactor Blueshift factor to apply
+     */
+    void ApplyBlueshift(double blueshiftFactor);
+
+    /**
+     * @brief Get type as string
+     * @return String representation of ray type
+     */
+    std::string GetTypeString() const;
+
+    /**
+     * @brief Get status as string
+     * @return String representation of ray status
+     */
+    std::string GetStatusString() const;
+
+    /**
+     * @brief Get spectral region
+     * @return String representation of spectral region
+     */
+    std::string GetSpectralRegion() const;
+
+    /**
+     * @brief Reserve capacity for path storage
+     * @param capacity Number of path points to reserve
+     */
+    void ReservePathCapacity(size_t capacity);
+
+    /**
+     * @brief Add position to ray path
+     * @param position Position to add to path
+     */
+    void AddToPath(const Vector3& position);
 
     /**
      * @brief Set position
@@ -81,9 +214,21 @@ public:
 
     /**
      * @brief Set frequency
-     * @param frequency New frequency in Hz
+     * @param frequency Frequency in Hz
      */
     void SetFrequency(double frequency) { m_frequency = frequency; }
+
+    /**
+     * @brief Set wavelength
+     * @param wavelength Wavelength in meters
+     */
+    void SetWavelength(double wavelength);
+
+    /**
+     * @brief Set wavelength in nanometers
+     * @param wavelength_nm Wavelength in nanometers
+     */
+    void SetWavelengthNm(double wavelength_nm);
 
     /**
      * @brief Get initial frequency (at emission)
@@ -116,10 +261,16 @@ public:
     void SetType(Type type) { m_type = type; }
 
     /**
-     * @brief Get ray status
+     * @brief Get current status
      * @return Current status
      */
     Status GetStatus() const { return m_status; }
+
+    /**
+     * @brief Check if ray is active
+     * @return True if ray is active
+     */
+    bool IsActive() const;
 
     /**
      * @brief Set ray status
@@ -165,9 +316,64 @@ public:
 
     /**
      * @brief Set energy
-     * @param energy Energy (dimensionless)
+     * @param e Energy (dimensionless)
      */
-    void SetEnergy(double energy) { m_energy = energy; }
+    void SetEnergy(double e) { m_energy = e; }
+
+    /**
+     * @brief Get conserved energy for geodesic motion
+     * @param center Center of mass position
+     * @param centralMass Central mass in kg
+     * @return Conserved energy
+     */
+    double GetConservedEnergy(const Vector3& center, double centralMass) const;
+
+    /**
+     * @brief Get conserved angular momentum for geodesic motion
+     * @param center Center of mass position
+     * @return Conserved angular momentum
+     */
+    double GetConservedAngularMomentum(const Vector3& center) const;
+
+    /**
+     * @brief Calculate redshift between two frequencies
+     * @param initialFrequency Initial frequency
+     * @param finalFrequency Final frequency
+     * @return Redshift value
+     */
+    double CalculateRedshift(double initialFrequency, double finalFrequency) const;
+
+    /**
+     * @brief Calculate redshift from initial frequency
+     * @param initialFrequency Initial frequency
+     * @return Redshift value
+     */
+    double CalculateRedshift(double initialFrequency) const;
+
+    /**
+     * @brief Get impact parameter relative to center
+     * @param center Center position
+     * @return Impact parameter
+     */
+    double GetImpactParameter(const Vector3& center) const;
+
+    /**
+     * @brief Get photon energy
+     * @return Photon energy
+     */
+    double GetPhotonEnergy() const;
+
+    /**
+     * @brief Get photon momentum
+     * @return Photon momentum
+     */
+    double GetPhotonMomentum() const;
+
+    /**
+     * @brief Get photon momentum vector
+     * @return Photon momentum vector
+     */
+    Vector3 GetPhotonMomentumVector() const;
 
     /**
      * @brief Calculate current redshift factor
@@ -216,10 +422,16 @@ public:
     std::array<float, 4> GetColor() const;
 
     /**
-     * @brief Get ray wavelength
+     * @brief Get wavelength in meters
      * @return Wavelength in meters
      */
     double GetWavelength() const;
+
+    /**
+     * @brief Get wavelength in nanometers
+     * @return Wavelength in nanometers
+     */
+    double GetWavelengthNm() const;
 
     /**
      * @brief Check if ray is in visible spectrum

@@ -62,13 +62,13 @@ public:
      * @brief Set outer disk radius
      * @param radius New outer radius in meters
      */
-    void SetOuterRadius(double radius) { m_outerRadius = radius; }
+    void SetOuterRadius(double radius);
 
     /**
      * @brief Get mass accretion rate
      * @return Accretion rate in kg/s
      */
-    double GetAccretionRate() const { return m_accretionRate; }
+    double GetAccretionRate() const;
 
     /**
      * @brief Set mass accretion rate
@@ -86,7 +86,7 @@ public:
      * @brief Set viscosity parameter
      * @param alpha New alpha parameter
      */
-    void SetAlpha(double alpha) { m_alpha = alpha; }
+    void SetAlpha(double alpha);
 
     /**
      * @brief Get disk model type
@@ -208,11 +208,7 @@ public:
      */
     double GetThermalTimescale(double radius) const;
 
-    /**
-     * @brief Update disk properties (for time evolution)
-     * @param deltaTime Time step in seconds
-     */
-    void Update(double deltaTime);
+    // Update method moved below with additional parameter
 
     /**
      * @brief Generate random emission point on disk
@@ -249,6 +245,14 @@ private:
     double m_accretionRate;                     ///< Mass accretion rate (kg/s)
     double m_alpha;                             ///< Viscosity parameter
     ModelType m_modelType;                      ///< Disk model type
+
+    // Disk state variables
+    double m_temperature;                       ///< Current temperature
+    double m_density;                           ///< Current density
+    double m_luminosity;                        ///< Current luminosity
+    bool m_isActive;                            ///< Whether disk is active
+    size_t m_numRings;                          ///< Number of rings in disk discretization
+    size_t m_numSectors;                        ///< Number of sectors in disk discretization
 
     // Cached values for performance
     mutable double m_cachedRadius;              ///< Last calculated radius
@@ -302,6 +306,172 @@ private:
      * @return RGB color [r, g, b] (0-1 range)
      */
     static std::array<float, 3> TemperatureToRGB(double temperature);
+
+    /**
+     * @brief Get position on disk at given radius and angle
+     * @param radius Radial distance from center
+     * @param angle Angular position in radians
+     * @param center Center position of the disk
+     * @param normal Normal vector of the disk plane
+     * @return Position vector on the disk
+     */
+    Vector3 GetDiskPosition(double radius, double angle, const Vector3& center, const Vector3& normal) const;
+
+    /**
+     * @brief Check if a position is within the accretion disk
+     * @param position Position to check
+     * @param diskCenter Center of the disk
+     * @param diskNormal Normal vector of the disk plane
+     * @return True if position is within disk bounds
+     */
+    bool IsInDisk(const Vector3& position, const Vector3& diskCenter, const Vector3& diskNormal) const;
+
+    /**
+     * @brief Update disk properties with black hole mass
+     * @param deltaTime Time step in seconds
+     * @param blackHoleMass Mass of the black hole
+     */
+    void Update(double deltaTime, double blackHoleMass);
+
+    /**
+     * @brief Reset disk to initial state
+     */
+    void Reset();
+
+private:
+    /**
+     * @brief Calculate total luminosity based on black hole mass
+     * @param blackHoleMass Mass of the black hole
+     * @return Total luminosity in watts
+     */
+    double CalculateTotalLuminosity(double blackHoleMass) const;
+
+    /**
+     * @brief Calculate temperature at given radius
+     * @param radius Radial distance from black hole
+     * @param blackHoleMass Mass of the black hole
+     * @return Temperature in Kelvin
+     */
+    double CalculateTemperature(double radius, double blackHoleMass) const;
+
+    /**
+     * @brief Calculate density at given radius
+     * @param radius Radial distance from black hole
+     * @param blackHoleMass Mass of the black hole
+     * @return Density in kg/m³
+     */
+    double CalculateDensity(double radius, double blackHoleMass) const;
+
+    /**
+     * @brief Calculate emission spectrum at given frequency and radius
+     */
+    double CalculateEmissionSpectrum(double frequency, double radius, double blackHoleMass) const;
+
+    /**
+     * @brief Calculate efficiency at given radius
+     */
+    double CalculateEfficiency(double radius) const;
+
+    /**
+     * @brief Calculate blackbody spectrum at given frequency and temperature
+     */
+    double CalculateBlackbodySpectrum(double frequency, double temperature) const;
+
+    /**
+     * @brief Calculate surface density at given radius
+     */
+    double CalculateSurfaceDensity(double radius, double blackHoleMass) const;
+
+    /**
+     * @brief Calculate luminosity at given radius
+     */
+    double CalculateLuminosity(double radius, double blackHoleMass) const;
+
+    /**
+     * @brief Calculate Shakura-Sunyaev disk properties
+     */
+    void CalculateShakuraSunyaevProperties(double radius, double blackHoleMass, double& temperature, double& density) const;
+
+    /**
+     * @brief Calculate Novikov-Thorne disk properties
+     */
+    void CalculateNovikovThorneProperties(double radius, double blackHoleMass, double& temperature, double& density) const;
+
+    /**
+     * @brief Calculate Shakura-Sunyaev temperature
+     */
+    double CalculateShakuraSunyaevTemperature(double radius, double blackHoleMass) const;
+
+    /**
+     * @brief Calculate Novikov-Thorne temperature
+     */
+    double CalculateNovikovThorneTemperature(double radius, double blackHoleMass) const;
+
+    /**
+     * @brief Set number of rings in the disk
+     */
+    void SetNumRings(size_t numRings);
+
+    /**
+     * @brief Set number of sectors in the disk
+     */
+    void SetNumSectors(size_t numSectors);
+
+    /**
+     * @brief Get number of rings in the disk
+     */
+    size_t GetNumRings() const;
+
+    /**
+     * @brief Get number of sectors in the disk
+     */
+    size_t GetNumSectors() const;
+
+    /**
+     * @brief Set whether the disk is active
+     */
+    void SetActive(bool active);
+
+    /**
+     * @brief Set the disk model
+     */
+    void SetModel(ModelType model);
+
+private:
+    /**
+     * @brief Initialize disk parameters
+     */
+    void InitializeDisk();
+
+    /**
+     * @brief Calculate relativistic correction factor
+     */
+    double CalculateRelativisticCorrection(double radius, double blackHoleMass) const;
+
+    /**
+     * @brief Calculate gravitational redshift at given radius
+     */
+    double CalculateGravitationalRedshift(double radius, double blackHoleMass) const;
+
+    /**
+     * @brief Calculate emission color at given radius and frequency
+     */
+    Vector3 CalculateEmissionColor(double radius, double frequency) const;
+
+    /**
+     * @brief Convert blackbody temperature to RGB color
+     */
+    Vector3 BlackbodyTemperatureToRGB(double temperature) const;
+
+    /**
+     * @brief Calculate Doppler shift for rotating disk
+     */
+    double CalculateDopplerShift(double radius, double observerAngle, double blackHoleMass) const;
+
+    /**
+     * @brief Get string representation of the disk model
+     */
+    std::string GetModelString() const;
 };
 
 } // namespace BlackHoleSim

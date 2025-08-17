@@ -159,8 +159,8 @@ void AccretionDisk::SetAlpha(double alpha) {
     }
 }
 
-void AccretionDisk::SetModel(Model model) {
-    m_model = model;
+void AccretionDisk::SetModel(ModelType model) {
+    m_modelType = model;
     if (m_isActive) {
         InitializeDisk();
     }
@@ -187,10 +187,10 @@ double AccretionDisk::CalculateTemperature(double radius, double blackHoleMass) 
         return 0.0;
     }
     
-    switch (m_model) {
-        case Model::SHAKURA_SUNYAEV:
+    switch (m_modelType) {
+        case ModelType::SHAKURA_SUNYAEV:
             return CalculateShakuraSunyaevTemperature(radius, blackHoleMass);
-        case Model::NOVIKOV_THORNE:
+        case ModelType::NOVIKOV_THORNE:
             return CalculateNovikovThorneTemperature(radius, blackHoleMass);
         default:
             return CalculateShakuraSunyaevTemperature(radius, blackHoleMass);
@@ -421,9 +421,10 @@ Vector3 AccretionDisk::BlackbodyTemperatureToRGB(double temperature) const {
     rgb = rgb * std::sqrt(intensity); // Square root for better visual scaling
     
     // Clamp to [0, 1]
-    rgb.x = std::clamp(rgb.x, 0.0, 1.0);
-    rgb.y = std::clamp(rgb.y, 0.0, 1.0);
-    rgb.z = std::clamp(rgb.z, 0.0, 1.0);
+    double clampedX = std::clamp(rgb.x(), 0.0, 1.0);
+    double clampedY = std::clamp(rgb.y(), 0.0, 1.0);
+    double clampedZ = std::clamp(rgb.z(), 0.0, 1.0);
+    rgb = Vector3(clampedX, clampedY, clampedZ);
     
     return rgb;
 }
@@ -471,9 +472,11 @@ double AccretionDisk::CalculateRelativisticCorrection(double radius, double blac
 
 // Utility methods
 std::string AccretionDisk::GetModelString() const {
-    switch (m_model) {
-        case Model::SHAKURA_SUNYAEV: return "Shakura-Sunyaev";
-        case Model::NOVIKOV_THORNE: return "Novikov-Thorne";
+    switch (m_modelType) {
+        case ModelType::SHAKURA_SUNYAEV: return "Shakura-Sunyaev";
+        case ModelType::NOVIKOV_THORNE: return "Novikov-Thorne";
+        case ModelType::THICK_DISK: return "Thick Disk";
+        case ModelType::CUSTOM: return "Custom";
         default: return "Unknown";
     }
 }
@@ -494,7 +497,8 @@ bool AccretionDisk::IsInDisk(const Vector3& position, const Vector3& diskCenter,
     
     // Check if close to disk plane
     Vector3 normalizedNormal = diskNormal.Normalized();
-    double heightAboveDisk = std::abs(relativePos.Dot(normalizedNormal));
+    double dotProduct = relativePos.Dot(normalizedNormal);
+    double heightAboveDisk = std::abs(dotProduct);
     
     // Disk thickness (approximate)
     double scaleHeight = radialDistance * 0.1; // Typical H/R ~ 0.1
@@ -509,7 +513,8 @@ Vector3 AccretionDisk::GetDiskPosition(double radius, double angle, const Vector
     
     // Find two orthogonal vectors in the disk plane
     Vector3 u, v;
-    if (std::abs(normalizedNormal.z) < 0.9) {
+    double normalZ = normalizedNormal.z();
+    if (std::abs(normalZ) < 0.9) {
         u = Vector3(0, 0, 1).Cross(normalizedNormal).Normalized();
     } else {
         u = Vector3(1, 0, 0).Cross(normalizedNormal).Normalized();
