@@ -331,6 +331,7 @@ private:
      */
     bool IsInDisk(const Vector3& position, const Vector3& diskCenter, const Vector3& diskNormal) const;
 
+public:
     /**
      * @brief Update disk properties with black hole mass
      * @param deltaTime Time step in seconds

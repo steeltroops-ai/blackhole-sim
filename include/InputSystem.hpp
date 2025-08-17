@@ -312,6 +312,7 @@ public:
 
 private:
     GLFWwindow* m_window;                       ///< GLFW window handle
+    bool m_initialized;                         ///< Initialization state
     
     // Input state
     std::unordered_map<int, KeyState> m_keyStates;          ///< Current key states

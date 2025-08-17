@@ -7,10 +7,10 @@ namespace BlackHoleSim {
 
 InputSystem::InputSystem() : m_window(nullptr), m_initialized(false) {
     // Initialize key and mouse states
-    std::fill(m_keyStates, m_keyStates + GLFW_KEY_LAST + 1, false);
-    std::fill(m_prevKeyStates, m_prevKeyStates + GLFW_KEY_LAST + 1, false);
-    std::fill(m_mouseButtonStates, m_mouseButtonStates + GLFW_MOUSE_BUTTON_LAST + 1, false);
-    std::fill(m_prevMouseButtonStates, m_prevMouseButtonStates + GLFW_MOUSE_BUTTON_LAST + 1, false);
+    m_keyStates.clear();
+    m_previousKeyStates.clear();
+    m_mouseButtonStates.fill(false);
+    m_previousMouseButtonStates.fill(false);
     
     m_mousePosition = {0.0, 0.0};
     m_mouseDelta = {0.0, 0.0};
@@ -44,7 +44,7 @@ bool InputSystem::Initialize(GLFWwindow* window) {
     glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
         InputSystem* inputSystem = static_cast<InputSystem*>(glfwGetWindowUserPointer(window));
         if (inputSystem) {
-            inputSystem->KeyCallback(key, scancode, action, mods);
+            inputSystem->KeyCallback(window, key, scancode, action, mods);
         }
     });
     
@@ -53,7 +53,7 @@ bool InputSystem::Initialize(GLFWwindow* window) {
     glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) {
         InputSystem* inputSystem = static_cast<InputSystem*>(glfwGetWindowUserPointer(window));
         if (inputSystem) {
-            inputSystem->MouseMoveCallback(xpos, ypos);
+            inputSystem->CursorPosCallback(window, xpos, ypos);
         }
     });
     
@@ -83,12 +83,12 @@ void InputSystem::Shutdown() {
     }
 }
 
-void InputSystem::Update() {
+void InputSystem::Update(double deltaTime) {
     if (!m_initialized) return;
     
     // Store previous states
-    std::copy(m_keyStates, m_keyStates + GLFW_KEY_LAST + 1, m_prevKeyStates);
-    std::copy(m_mouseButtonStates, m_mouseButtonStates + GLFW_MOUSE_BUTTON_LAST + 1, m_prevMouseButtonStates);
+    m_previousKeyStates = m_keyStates;
+    m_previousMouseButtonStates = m_mouseButtonStates;
     
     m_mouseDelta = {0.0, 0.0};
     
@@ -104,109 +104,67 @@ void InputSystem::Update() {
 }
 
 bool InputSystem::IsKeyPressed(int key) const {
-    if (key < 0 || key > GLFW_KEY_LAST) return false;
-    return m_keyStates[key] && !m_prevKeyStates[key];
+    auto it = m_keyStates.find(key);
+    if (it == m_keyStates.end()) return false;
+    return it->second == KeyState::PRESSED;
 }
 
-bool InputSystem::IsKeyHeld(int key) const {
-    if (key < 0 || key > GLFW_KEY_LAST) return false;
-    return m_keyStates[key];
-}
-
-bool InputSystem::IsKeyReleased(int key) const {
-    if (key < 0 || key > GLFW_KEY_LAST) return false;
-    return !m_keyStates[key] && m_prevKeyStates[key];
-}
-
-bool InputSystem::IsMouseButtonPressed(int button) const {
-    if (button < 0 || button > GLFW_MOUSE_BUTTON_LAST) return false;
-    return m_mouseButtonStates[button] && !m_prevMouseButtonStates[button];
-}
-
-bool InputSystem::IsMouseButtonHeld(int button) const {
-    if (button < 0 || button > GLFW_MOUSE_BUTTON_LAST) return false;
-    return m_mouseButtonStates[button];
-}
-
-bool InputSystem::IsMouseButtonReleased(int button) const {
-    if (button < 0 || button > GLFW_MOUSE_BUTTON_LAST) return false;
-    return !m_mouseButtonStates[button] && m_prevMouseButtonStates[button];
-}
-
-void InputSystem::GetMousePosition(double& x, double& y) const {
-    x = m_mousePosition[0];
-    y = m_mousePosition[1];
-}
-
-void InputSystem::GetMouseDelta(double& deltaX, double& deltaY) const {
-    deltaX = m_mouseDelta[0];
-    deltaY = m_mouseDelta[1];
-}
-
-void InputSystem::GetScrollOffset(double& offsetX, double& offsetY) const {
-    offsetX = m_scrollDelta[0];
-    offsetY = m_scrollDelta[1];
-}
-
-void InputSystem::SetCursorMode(int mode) {
-    if (m_window) {
-        glfwSetInputMode(m_window, GLFW_CURSOR, mode);
-    }
-}
-
-// Callback registration methods removed - use Set*Callback methods from header instead
-
-void InputSystem::KeyCallback(int key, int scancode, int action, int mods) {
-    if (key >= 0 && key <= GLFW_KEY_LAST) {
-        if (action == GLFW_PRESS) {
-            m_keyStates[key] = true;
-        } else if (action == GLFW_RELEASE) {
-            m_keyStates[key] = false;
-        }
-    }
+bool InputSystem::IsKeyJustPressed(int key) const {
+    auto current = m_keyStates.find(key);
+    auto previous = m_previousKeyStates.find(key);
     
-    // Check for key bindings and trigger actions
-    if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-        auto it = m_keyBindings.find(key);
-        if (it != m_keyBindings.end()) {
-            const KeyBinding& binding = it->second;
-            
-            // Check modifier requirements
-            auto modStates = GetModifierStates();
-            bool shiftPressed = modStates[0];
-            bool ctrlPressed = modStates[1];
-            bool altPressed = modStates[2];
-            
-            if (binding.requireShift == shiftPressed &&
-                binding.requireCtrl == ctrlPressed &&
-                binding.requireAlt == altPressed) {
-                TriggerAction(binding.action, 1.0f);
-            }
-        }
-    }
+    KeyState currentState = (current != m_keyStates.end()) ? current->second : KeyState::RELEASED;
+    KeyState previousState = (previous != m_previousKeyStates.end()) ? previous->second : KeyState::RELEASED;
+    
+    return currentState == KeyState::PRESSED && previousState == KeyState::RELEASED;
 }
+
+bool InputSystem::IsKeyJustReleased(int key) const {
+    auto current = m_keyStates.find(key);
+    auto previous = m_previousKeyStates.find(key);
+    
+    KeyState currentState = (current != m_keyStates.end()) ? current->second : KeyState::RELEASED;
+    KeyState previousState = (previous != m_previousKeyStates.end()) ? previous->second : KeyState::RELEASED;
+    
+    return currentState == KeyState::RELEASED && (previousState == KeyState::PRESSED || previousState == KeyState::HELD);
+}
+
+// Mouse button and position methods are implemented inline in header or have different signatures
+
+// GetMouseDelta and GetScrollDelta are implemented inline in header
 
 // HandleMouseButton method removed - logic moved to static MouseButtonCallback
 
-void InputSystem::MouseMoveCallback(double xpos, double ypos) {
-    double deltaX = xpos - m_mousePosition[0];
-    double deltaY = ypos - m_mousePosition[1];
-    
-    m_mouseDelta[0] = deltaX * m_mouseSensitivity;
-    m_mouseDelta[1] = deltaY * m_mouseSensitivity;
-    m_mousePosition[0] = xpos;
-    m_mousePosition[1] = ypos;
-    
-    // Call registered callback
-    if (m_mouseCallback) {
-        m_mouseCallback(xpos, ypos, deltaX, deltaY);
+void InputSystem::CursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
+    if (s_instance) {
+        double deltaX = xpos - s_instance->m_mousePosition[0];
+        double deltaY = ypos - s_instance->m_mousePosition[1];
+        
+        s_instance->m_mouseDelta[0] = deltaX * s_instance->m_mouseSensitivity;
+        s_instance->m_mouseDelta[1] = deltaY * s_instance->m_mouseSensitivity;
+        s_instance->m_mousePosition[0] = xpos;
+        s_instance->m_mousePosition[1] = ypos;
+        
+        // Call registered callback
+        if (s_instance->m_mouseCallback) {
+            s_instance->m_mouseCallback(xpos, ypos, deltaX, deltaY);
+        }
     }
 }
 
 // Static callback functions for GLFW
 void InputSystem::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (s_instance) {
-        s_instance->KeyCallback(key, scancode, action, mods);
+        // Handle key state changes directly here
+        if (key >= 0 && key < GLFW_KEY_LAST) {
+            KeyState newState = KeyState::RELEASED;
+            if (action == GLFW_PRESS) {
+                newState = KeyState::PRESSED;
+            } else if (action == GLFW_REPEAT) {
+                newState = KeyState::HELD;
+            }
+            s_instance->m_keyStates[key] = newState;
+        }
     }
 }
 
@@ -231,22 +189,7 @@ void InputSystem::MouseButtonCallback(GLFWwindow* window, int button, int action
     }
 }
 
-void InputSystem::CursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
-    if (s_instance) {
-        double deltaX = xpos - s_instance->m_mousePosition[0];
-        double deltaY = ypos - s_instance->m_mousePosition[1];
-        
-        s_instance->m_mouseDelta[0] = deltaX;
-        s_instance->m_mouseDelta[1] = deltaY;
-        s_instance->m_mousePosition[0] = xpos;
-        s_instance->m_mousePosition[1] = ypos;
-        
-        // Call registered callback
-        if (s_instance->m_mouseCallback) {
-            s_instance->m_mouseCallback(xpos, ypos, deltaX, deltaY);
-        }
-    }
-}
+// Duplicate CursorPosCallback removed - using the one defined earlier
 
 void InputSystem::GLFWScrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
     if (s_instance) {
@@ -329,7 +272,7 @@ void InputSystem::ProcessKeyInput() {
         int key = binding.first;
         const KeyBinding& keyBinding = binding.second;
         
-        if (IsKeyHeld(key)) {
+        if (IsKeyPressed(key)) {
             // Check modifier requirements
             auto modStates = GetModifierStates();
             bool shiftPressed = modStates[0];
@@ -365,7 +308,7 @@ void InputSystem::ProcessMouseInput() {
         MouseButton button = binding.first;
         Action action = binding.second;
         
-        if (IsMouseButtonHeld(static_cast<int>(button))) {
+        if (IsMouseButtonPressed(button)) {
             // Continuous mouse actions can be added here if needed
         }
     }

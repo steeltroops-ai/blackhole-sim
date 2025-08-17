@@ -9,6 +9,10 @@
 #include <algorithm>
 #include <iostream>
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 namespace BlackHoleSim {
 
 // Physical constants
@@ -138,7 +142,7 @@ void AccretionDisk::SetAccretionRate(double rate) {
 }
 
 void AccretionDisk::SetAlpha(double alpha) {
-    m_alpha = std::clamp(alpha, 0.01, 1.0); // Reasonable range for alpha
+    m_alpha = std::max(0.01, std::min(alpha, 1.0)); // Reasonable range for alpha
     if (m_isActive) {
         InitializeDisk();
     }
@@ -401,14 +405,14 @@ Vector3 AccretionDisk::BlackbodyTemperatureToRGB(double temperature) const {
     
     // Apply intensity based on temperature (Stefan-Boltzmann law)
     double intensity = std::pow(temperature / 5778.0, 4.0); // Relative to Sun
-    intensity = std::clamp(intensity, 0.01, 10.0);
+    intensity = std::max(0.01, std::min(intensity, 10.0));
     
     rgb = rgb * std::sqrt(intensity); // Square root for better visual scaling
     
     // Clamp to [0, 1]
-    double clampedX = std::clamp(rgb.x(), 0.0, 1.0);
-    double clampedY = std::clamp(rgb.y(), 0.0, 1.0);
-    double clampedZ = std::clamp(rgb.z(), 0.0, 1.0);
+    double clampedX = std::max(0.0, std::min(rgb.x(), 1.0));
+    double clampedY = std::max(0.0, std::min(rgb.y(), 1.0));
+    double clampedZ = std::max(0.0, std::min(rgb.z(), 1.0));
     rgb = Vector3(clampedX, clampedY, clampedZ);
     
     return rgb;

@@ -107,7 +107,7 @@ bool SimulationManager::InitializeSubsystems() {
     // Initialize Physics Engine
     std::cout << "  Initializing Physics Engine...\n";
     m_physicsEngine.reset(new PhysicsEngine());
-    if (!m_physicsEngine->Initialize(m_config.physicsConfig)) {
+    if (!m_physicsEngine->Initialize(std::shared_ptr<BlackHole>(m_blackHole.get(), [](BlackHole*){}))) {
         std::cerr << "    Failed to initialize Physics Engine\n";
         return false;
     }
@@ -116,14 +116,13 @@ bool SimulationManager::InitializeSubsystems() {
     std::cout << "  Initializing Rendering Engine...\n";
     m_renderingEngine.reset(new RenderingEngine());
     if (!m_renderingEngine->Initialize(m_config.windowWidth, m_config.windowHeight, 
-                                       "Black Hole Simulation", m_config.fullscreen)) {
+                                       "Black Hole Simulation")) {
         std::cerr << "    Failed to initialize Rendering Engine\n";
         return false;
     }
     
     // Configure rendering settings
-    m_renderingEngine->SetVSync(m_config.vsync);
-    m_renderingEngine->SetMSAA(m_config.msaaSamples);
+    // TODO: Add SetVSync and SetMSAA methods to RenderingEngine if needed
     
     // Initialize Input System
     std::cout << "  Initializing Input System...\n";
@@ -149,9 +148,10 @@ void SimulationManager::SetupDefaultScene() {
     double innerRadius = 3.0 * m_blackHole->GetSchwarzschildRadius();
     double outerRadius = 20.0 * m_blackHole->GetSchwarzschildRadius();
     double accretionRate = 0.1 * solarMass;
-    // Create shared_ptr from the existing BlackHole
-    std::shared_ptr<BlackHole> blackHolePtr(m_blackHole.get(), [](BlackHole*){});
-    m_accretionDisk.reset(new AccretionDisk(blackHolePtr, innerRadius, outerRadius, accretionRate));
+    // Create AccretionDisk with proper parameters
+    AccretionDisk::ModelType model = AccretionDisk::ModelType::SHAKURA_SUNYAEV;
+    double alpha = 0.1;
+    m_accretionDisk.reset(new AccretionDisk(innerRadius, outerRadius, accretionRate, model, alpha));
     
     // Add some test particles
     AddTestParticles();
@@ -417,8 +417,8 @@ void SimulationManager::UpdatePhysics() {
     // The physics integration will need to be implemented when we fix the storage types
     
     // Update accretion disk
-    if (m_accretionDisk) {
-        m_accretionDisk->Update(m_timeStep);
+    if (m_accretionDisk && m_blackHole) {
+        m_accretionDisk->Update(m_timeStep, m_blackHole->GetMass());
     }
     
     // Advance simulation time

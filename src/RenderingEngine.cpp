@@ -1,5 +1,5 @@
-#include "RenderingEngine.hpp"
 #include "glad.h"
+#include "RenderingEngine.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -10,9 +10,32 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+// Define missing OpenGL constants
+#ifndef GL_MULTISAMPLE
+#define GL_MULTISAMPLE 0x809D
+#endif
+#ifndef GL_SHADING_LANGUAGE_VERSION
+#define GL_SHADING_LANGUAGE_VERSION 0x8B8C
+#endif
+#ifndef GL_RGB
+#define GL_RGB 0x1907
+#endif
+#ifndef GL_RGBA
+#define GL_RGBA 0x1908
+#endif
+#ifndef GL_UNSIGNED_BYTE
+#define GL_UNSIGNED_BYTE 0x1401
+#endif
+
+// Declare missing OpenGL functions
+extern "C" {
+    void glBlendFunc(unsigned int sfactor, unsigned int dfactor);
+    const unsigned char* glGetString(unsigned int name);
+    void glReadPixels(int x, int y, int width, int height, unsigned int format, unsigned int type, void* pixels);
+}
+
 #ifdef _WIN32
 #include <windows.h>
-#include <GL/gl.h>
 #endif
 
 using namespace BlackHoleSim;
@@ -108,7 +131,7 @@ bool RenderingEngine::Initialize(int width, int height, const std::string& title
     wc.hInstance = GetModuleHandle(nullptr);
     wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-    wc.lpszClassName = L"BlackHoleSimWindow";
+    wc.lpszClassName = "BlackHoleSimWindow";
     
     if (!RegisterClassEx(&wc)) {
         std::cerr << "Failed to register window class" << std::endl;
@@ -116,11 +139,10 @@ bool RenderingEngine::Initialize(int width, int height, const std::string& title
     }
     
     // Create window
-    std::wstring wtitle(title.begin(), title.end());
     m_hwnd = CreateWindowEx(
         0,
-        L"BlackHoleSimWindow",
-        wtitle.c_str(),
+        "BlackHoleSimWindow",
+        title.c_str(),
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT,
         width, height,
@@ -726,7 +748,9 @@ bool RenderingEngine::TakeScreenshot(const std::string& filename) const {
 // Specific rendering methods
 void RenderingEngine::RenderSpacetimeGrid(const BlackHole& blackHole) {
     // Generate grid geometry with curvature
-    auto [vertices, indices] = GenerateGrid(100.0f, m_qualitySettings.gridResolution);
+    auto gridData = GenerateGrid(100.0f, m_qualitySettings.gridResolution);
+    auto& vertices = gridData.first;
+    auto& indices = gridData.second;
     
     // Apply spacetime curvature to grid vertices
     for (size_t i = 0; i < vertices.size(); i += 3) {
@@ -778,7 +802,7 @@ void RenderingEngine::RenderParticleTrails(const std::vector<std::unique_ptr<Par
     for (const auto& particle : particles) {
         if (!particle) continue;
         
-        const auto& trail = particle->GetTrail();
+        const auto& trail = particle->GetTrajectory();
         if (trail.size() < 2) continue;
         
         // Render trail as connected line segments
@@ -865,8 +889,8 @@ void RenderingEngine::RenderAccretionDisk(const AccretionDisk& accretionDisk) {
             int aboveNext = (r + 1) * sectors + (s + 1) % sectors;
             
             // Two triangles per quad
-            indices.insert(indices.end(), {current, next, above});
-            indices.insert(indices.end(), {next, aboveNext, above});
+            indices.insert(indices.end(), {static_cast<unsigned int>(current), static_cast<unsigned int>(next), static_cast<unsigned int>(above)});
+            indices.insert(indices.end(), {static_cast<unsigned int>(next), static_cast<unsigned int>(aboveNext), static_cast<unsigned int>(above)});
         }
     }
     

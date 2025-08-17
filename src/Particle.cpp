@@ -281,7 +281,10 @@ SphericalCoords Particle::CartesianToSpherical(const Vector3& cartesian) {
     spherical.r = cartesian.Magnitude();
     
     if (spherical.r > 1e-10) {
-        spherical.theta = std::acos(std::clamp(cartesian.z() / spherical.r, -1.0, 1.0));
+        double cosTheta = cartesian.z() / spherical.r;
+        // Manual clamp for C++11 compatibility
+        cosTheta = (cosTheta < -1.0) ? -1.0 : (cosTheta > 1.0) ? 1.0 : cosTheta;
+        spherical.theta = std::acos(cosTheta);
         spherical.phi = std::atan2(cartesian.y(), cartesian.x());
     } else {
         spherical.theta = 0.0;
