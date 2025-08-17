@@ -9,11 +9,20 @@
 #include <array>
 #include <string>
 #include <unordered_map>
+#include <functional>
+
+struct GLFWwindow; // Forward declaration
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 // Forward declarations for OpenGL types
-struct GLFWwindow;
 typedef unsigned int GLuint;
+typedef unsigned int GLenum;
 typedef int GLint;
+typedef float GLfloat;
+typedef unsigned char GLubyte;
 
 namespace BlackHoleSim {
 
@@ -220,8 +229,14 @@ public:
     double GetFPS() const { return m_fps; }
 
 private:
-    // OpenGL context
-    GLFWwindow* m_window;                       ///< GLFW window
+    // Window and OpenGL context
+    GLFWwindow* m_window;                       ///< GLFW window handle
+#ifdef _WIN32
+    HWND m_hwnd;                                ///< Windows window handle
+    HDC m_hdc;                                  ///< Device context
+    HGLRC m_hglrc;                              ///< OpenGL rendering context
+#endif
+    bool m_initialized;                         ///< Initialization state
     int m_windowWidth, m_windowHeight;          ///< Window dimensions
 
     // Rendering state
@@ -388,13 +403,11 @@ private:
      */
     void UpdatePerformanceMetrics();
 
-    // Static callback functions for GLFW
-    static void ErrorCallback(int error, const char* description);
-    static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
-    static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-    static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
-    static void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
-    static void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+    // Windows message handling
+#ifdef _WIN32
+    static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    void HandleWindowMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
+#endif
 };
 
 } // namespace BlackHoleSim

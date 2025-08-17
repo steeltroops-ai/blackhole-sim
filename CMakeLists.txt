@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 project(BlackHoleSimulation VERSION 1.0.0 LANGUAGES CXX)
 
 # Set C++ standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -17,8 +17,6 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 
 # Find required packages
 find_package(OpenGL REQUIRED)
-find_package(glfw3 REQUIRED)
-find_package(OpenMP)
 
 # Include directories
 include_directories(${CMAKE_SOURCE_DIR}/include)
@@ -35,6 +33,7 @@ set(SOURCES
     src/Particle.cpp
     src/LightRay.cpp
     src/AccretionDisk.cpp
+    src/glad.c
 )
 
 # Create executable
@@ -43,34 +42,22 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 # Link libraries
 target_link_libraries(${PROJECT_NAME} 
     ${OPENGL_LIBRARIES}
-    glfw
+    gdi32
+    user32
+    kernel32
+    opengl32
 )
 
 # Link OpenMP if available
-if(OpenMP_CXX_FOUND)
-    target_link_libraries(${PROJECT_NAME} OpenMP::OpenMP_CXX)
-endif()
+# if(OpenMP_CXX_FOUND)
+#     target_link_libraries(${PROJECT_NAME} OpenMP::OpenMP_CXX)
+# endif()
 
 # Enable testing
 enable_testing()
 
-# Test executable
-set(TEST_SOURCES
-    tests/TestPhysics.cpp
-    tests/TestRendering.cpp
-    tests/TestIntegration.cpp
-    src/PhysicsEngine.cpp
-    src/BlackHole.cpp
-    src/Particle.cpp
-    src/LightRay.cpp
-    src/AccretionDisk.cpp
-)
-
-add_executable(RunTests ${TEST_SOURCES})
-target_link_libraries(RunTests ${OPENGL_LIBRARIES})
-
-# Add test
-add_test(NAME UnitTests COMMAND RunTests)
+# Add tests subdirectory
+add_subdirectory(tests)
 
 # Installation
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)

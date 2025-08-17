@@ -101,6 +101,16 @@ public:
      * @brief Scroll callback function type
      */
     using ScrollCallback = std::function<void(double xOffset, double yOffset)>;
+    
+    /**
+     * @brief Key binding structure
+     */
+    struct KeyBinding {
+        Action action;
+        bool requireShift;
+        bool requireCtrl;
+        bool requireAlt;
+    };
 
     /**
      * @brief Construct input system
@@ -284,9 +294,9 @@ public:
 
     /**
      * @brief Get all current key bindings
-     * @return Map of key codes to actions
+     * @return Map of key codes to key bindings
      */
-    const std::unordered_map<int, Action>& GetKeyBindings() const { return m_keyBindings; }
+    const std::unordered_map<int, KeyBinding>& GetKeyBindings() const { return m_keyBindings; }
 
     /**
      * @brief Check if any key is currently pressed
@@ -318,12 +328,6 @@ private:
     float m_mouseSensitivity;                   ///< Mouse sensitivity multiplier
     
     // Key bindings
-    struct KeyBinding {
-        Action action;
-        bool requireShift;
-        bool requireCtrl;
-        bool requireAlt;
-    };
     
     std::unordered_map<int, KeyBinding> m_keyBindings;      ///< Key to action bindings
     std::unordered_map<MouseButton, Action> m_mouseBindings; ///< Mouse button to action bindings
@@ -378,7 +382,7 @@ private:
     static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
     static void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
-    static void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+    static void GLFWScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
     
     // Static instance pointer for callbacks
     static InputSystem* s_instance;
