@@ -24,28 +24,13 @@ const double m_e = 9.1093837015e-31;    // Electron mass (kg)
 const double ALPHA_DEFAULT = 0.1;       // Shakura-Sunyaev alpha parameter
 const double BETA_DEFAULT = 0.5;        // Magnetic pressure ratio
 
-AccretionDisk::AccretionDisk()
-    : m_innerRadius(0.0)
-    , m_outerRadius(0.0)
-    , m_accretionRate(0.0)
-    , m_alpha(ALPHA_DEFAULT)
-    , m_model(Model::SHAKURA_SUNYAEV)
-    , m_temperature(0.0)
-    , m_density(0.0)
-    , m_luminosity(0.0)
-    , m_isActive(false)
-    , m_numRings(50)
-    , m_numSectors(32)
-{
-}
-
 AccretionDisk::AccretionDisk(double innerRadius, double outerRadius, double accretionRate, 
-                            Model model, double alpha)
+                            ModelType model, double alpha)
     : m_innerRadius(innerRadius)
     , m_outerRadius(outerRadius)
     , m_accretionRate(accretionRate)
     , m_alpha(alpha)
-    , m_model(model)
+    , m_modelType(model)
     , m_temperature(0.0)
     , m_density(0.0)
     , m_luminosity(0.0)
@@ -102,8 +87,8 @@ double AccretionDisk::GetAlpha() const {
     return m_alpha;
 }
 
-AccretionDisk::Model AccretionDisk::GetModel() const {
-    return m_model;
+AccretionDisk::ModelType AccretionDisk::GetModel() const {
+    return m_modelType;
 }
 
 double AccretionDisk::GetTemperature() const {
@@ -533,6 +518,7 @@ double AccretionDisk::GetDiskHeight(double radius) const {
 }
 
 void AccretionDisk::Update(double deltaTime, double blackHoleMass) {
+    (void)deltaTime; // Suppress unused parameter warning
     if (!m_isActive) {
         return;
     }

@@ -17,7 +17,7 @@ echo -e "${BLUE}===================================${NC}"
 
 # Configuration
 CXX="g++"
-CXXFLAGS="-std=c++11 -Wall -Wextra -O2 -g"
+CXXFLAGS="-std=c++17 -Wall -Wextra -O2 -g"
 INCLUDE_DIR="include"
 SRC_DIR="src"
 BUILD_DIR="build"

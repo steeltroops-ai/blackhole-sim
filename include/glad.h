@@ -63,6 +63,8 @@
 #define GL_ELEMENT_ARRAY_BUFFER           0x8893
 #define GL_STATIC_DRAW                    0x88E4
 #define GL_DYNAMIC_DRAW                   0x88E8
+#define GL_POINTS                         0x0000
+#define GL_LINES                          0x0001
 
 typedef void GLvoid;
 typedef unsigned int GLenum;
@@ -103,6 +105,13 @@ typedef GLint (APIENTRYP PFNGLGETUNIFORMLOCATIONPROC) (GLuint program, const GLc
 typedef void (APIENTRYP PFNGLUNIFORMMATRIX4FVPROC) (GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
 typedef void (APIENTRYP PFNGLUNIFORM1FPROC) (GLint location, GLfloat v0);
 typedef void (APIENTRYP PFNGLUNIFORM1IPROC) (GLint location, GLint v0);
+typedef void (APIENTRYP PFNGLDELETESHADERPROC) (GLuint shader);
+typedef void (APIENTRYP PFNGLGETSHADERINFOLOGPROC) (GLuint shader, GLsizei bufSize, GLsizei *length, GLchar *infoLog);
+typedef void (APIENTRYP PFNGLGETPROGRAMINFOLOGPROC) (GLuint program, GLsizei bufSize, GLsizei *length, GLchar *infoLog);
+typedef void (APIENTRYP PFNGLPOINTSIZEPROC) (GLfloat size);
+typedef void (APIENTRYP PFNGLDELETEVERTEXARRAYSPROC) (GLsizei n, const GLuint *arrays);
+typedef void (APIENTRYP PFNGLDELETEBUFFERSPROC) (GLsizei n, const GLuint *buffers);
+typedef void (APIENTRYP PFNGLDELETEPROGRAMPROC) (GLuint program);
 
 GLAPI PFNGLCLEARPROC glad_glClear;
 GLAPI PFNGLCLEARCOLORPROC glad_glClearColor;
@@ -128,6 +137,13 @@ GLAPI PFNGLLINKPROGRAMPROC glad_glLinkProgram;
 GLAPI PFNGLGETPROGRAMIVPROC glad_glGetProgramiv;
 GLAPI PFNGLUSEPROGRAMPROC glad_glUseProgram;
 GLAPI PFNGLGETUNIFORMLOCATIONPROC glad_glGetUniformLocation;
+GLAPI PFNGLDELETESHADERPROC glad_glDeleteShader;
+GLAPI PFNGLGETSHADERINFOLOGPROC glad_glGetShaderInfoLog;
+GLAPI PFNGLGETPROGRAMINFOLOGPROC glad_glGetProgramInfoLog;
+GLAPI PFNGLPOINTSIZEPROC glad_glPointSize;
+GLAPI PFNGLDELETEVERTEXARRAYSPROC glad_glDeleteVertexArrays;
+GLAPI PFNGLDELETEBUFFERSPROC glad_glDeleteBuffers;
+GLAPI PFNGLDELETEPROGRAMPROC glad_glDeleteProgram;
 GLAPI PFNGLUNIFORMMATRIX4FVPROC glad_glUniformMatrix4fv;
 GLAPI PFNGLUNIFORM1FPROC glad_glUniform1f;
 GLAPI PFNGLUNIFORM1IPROC glad_glUniform1i;
@@ -159,6 +175,13 @@ GLAPI PFNGLUNIFORM1IPROC glad_glUniform1i;
 #define glUniformMatrix4fv glad_glUniformMatrix4fv
 #define glUniform1f glad_glUniform1f
 #define glUniform1i glad_glUniform1i
+#define glDeleteShader glad_glDeleteShader
+#define glGetShaderInfoLog glad_glGetShaderInfoLog
+#define glGetProgramInfoLog glad_glGetProgramInfoLog
+#define glPointSize glad_glPointSize
+#define glDeleteVertexArrays glad_glDeleteVertexArrays
+#define glDeleteBuffers glad_glDeleteBuffers
+#define glDeleteProgram glad_glDeleteProgram
 
 int gladLoadGL(void);
 

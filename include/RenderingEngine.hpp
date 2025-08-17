@@ -269,6 +269,18 @@ private:
     std::array<float, 16> m_viewMatrix;         ///< View matrix
     std::array<float, 16> m_projectionMatrix;   ///< Projection matrix
     std::array<float, 16> m_modelMatrix;        ///< Model matrix
+    
+    // Camera arrays (used in implementation)
+    float m_cameraPosition[3];                  ///< Camera position array
+    float m_cameraTarget[3];                    ///< Camera target array
+    float m_cameraUp[3];                        ///< Camera up vector array
+    float m_fieldOfView;                        ///< Field of view
+    float m_nearPlane;                          ///< Near clipping plane
+    float m_farPlane;                           ///< Far clipping plane
+    
+    // OpenGL objects
+    GLuint m_VAO, m_VBO, m_EBO;                 ///< Main vertex array and buffer objects
+    GLuint m_shaderProgram;                     ///< Main shader program
 
     /**
      * @brief Initialize OpenGL context
@@ -356,6 +368,125 @@ private:
      * @brief Update view and projection matrices
      */
     void UpdateMatrices();
+
+    /**
+     * @brief Update view matrix based on camera position and orientation
+     */
+    void UpdateViewMatrix();
+
+    /**
+     * @brief Update projection matrix based on field of view and aspect ratio
+     */
+    void UpdateProjectionMatrix();
+
+    /**
+     * @brief Render generic geometry with vertices and indices
+     * @param vertices Vertex data array
+     * @param indices Index array
+     * @param alpha Alpha transparency value
+     */
+    void RenderGeometry(const std::vector<float>& vertices, const std::vector<unsigned int>& indices, float alpha = 1.0f);
+
+    /**
+     * @brief Render a sphere at specified position
+     * @param x X position
+     * @param y Y position
+     * @param z Z position
+     * @param radius Sphere radius
+     * @param r Red color component
+     * @param g Green color component
+     * @param b Blue color component
+     * @param alpha Alpha transparency
+     */
+    void RenderSphere(float x, float y, float z, float radius, float r, float g, float b, float alpha = 1.0f);
+
+    /**
+     * @brief Render points from vertex data
+     * @param vertices Vertex data array
+     * @param indices Index array
+     * @param alpha Alpha transparency value
+     */
+    void RenderPoints(const std::vector<float>& vertices, const std::vector<unsigned int>& indices, float alpha = 1.0f);
+
+    /**
+     * @brief Render a line between two points
+     * @param x1,y1,z1 Start point coordinates
+     * @param x2,y2,z2 End point coordinates
+     * @param r,g,b,alpha Color and transparency
+     */
+    void RenderLine(float x1, float y1, float z1, float x2, float y2, float z2, float r, float g, float b, float alpha = 1.0f);
+
+    /**
+     * @brief Render a single point
+     * @param x,y,z Point coordinates
+     * @param size Point size
+     * @param r,g,b,alpha Color and transparency
+     */
+    void RenderPoint(float x, float y, float z, float size, float r, float g, float b, float alpha = 1.0f);
+
+    /**
+     * @brief Set camera position
+     * @param x X coordinate
+     * @param y Y coordinate
+     * @param z Z coordinate
+     */
+    void SetCameraPosition(float x, float y, float z);
+
+    /**
+     * @brief Set camera target
+     * @param x X coordinate
+     * @param y Y coordinate
+     * @param z Z coordinate
+     */
+    void SetCameraTarget(float x, float y, float z);
+
+    /**
+     * @brief Set camera up vector
+     * @param x X component
+     * @param y Y component
+     * @param z Z component
+     */
+    void SetCameraUp(float x, float y, float z);
+
+    /**
+     * @brief Set field of view
+     * @param fov Field of view in degrees
+     */
+    void SetFieldOfView(float fov);
+
+    /**
+     * @brief Set near and far clipping planes
+     * @param nearPlane Near clipping plane distance
+     * @param farPlane Far clipping plane distance
+     */
+    void SetNearFarPlanes(float nearPlane, float farPlane);
+
+    /**
+     * @brief Set matrix uniform in shader
+     * @param name Uniform name
+     * @param matrix Matrix data (16 floats)
+     */
+    void SetMatrix4(const std::string& name, const float* matrix);
+
+    /**
+     * @brief Set float uniform in shader
+     * @param name Uniform name
+     * @param value Float value
+     */
+    void SetFloat(const std::string& name, float value);
+
+    /**
+     * @brief Set boolean uniform in shader
+     * @param name Uniform name
+     * @param value Boolean value
+     */
+    void SetBool(const std::string& name, bool value);
+
+    /**
+     * @brief Create and compile shader program
+     * @return True if successful
+     */
+    bool CreateShaderProgram();
 
     /**
      * @brief Load shader from file

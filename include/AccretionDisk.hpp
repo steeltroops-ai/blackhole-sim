@@ -28,23 +28,28 @@ public:
 
     /**
      * @brief Construct accretion disk with given parameters
-     * @param blackHole Pointer to central black hole
      * @param innerRadius Inner disk radius (typically ISCO)
      * @param outerRadius Outer disk radius
      * @param accretionRate Mass accretion rate in kg/s
+     * @param model Disk model type
      * @param alpha Viscosity parameter (Shakura-Sunyaev)
      */
-    AccretionDisk(std::shared_ptr<BlackHole> blackHole,
-                  double innerRadius,
+    AccretionDisk(double innerRadius,
                   double outerRadius,
                   double accretionRate,
+                  ModelType model,
                   double alpha = 0.1);
 
     /**
-     * @brief Get inner disk radius
-     * @return Inner radius in meters
+     * @brief Destructor
      */
-    double GetInnerRadius() const { return m_innerRadius; }
+    ~AccretionDisk();
+
+    /**
+      * @brief Get inner disk radius
+      * @return Inner radius in meters
+     */
+    double GetInnerRadius() const;
 
     /**
      * @brief Set inner disk radius
@@ -56,7 +61,7 @@ public:
      * @brief Get outer disk radius
      * @return Outer radius in meters
      */
-    double GetOuterRadius() const { return m_outerRadius; }
+    double GetOuterRadius() const;
 
     /**
      * @brief Set outer disk radius
@@ -80,7 +85,7 @@ public:
      * @brief Get viscosity parameter (alpha)
      * @return Alpha parameter (dimensionless)
      */
-    double GetAlpha() const { return m_alpha; }
+    double GetAlpha() const;
 
     /**
      * @brief Set viscosity parameter
@@ -426,6 +431,31 @@ private:
      * @brief Get number of sectors in the disk
      */
     size_t GetNumSectors() const;
+
+    /**
+     * @brief Check if disk is active
+     */
+    bool IsActive() const;
+
+    /**
+     * @brief Get total luminosity
+     */
+    double GetLuminosity() const;
+
+    /**
+     * @brief Get disk model
+     */
+    ModelType GetModel() const;
+
+    /**
+     * @brief Get current temperature
+     */
+    double GetTemperature() const;
+
+    /**
+     * @brief Get current density
+     */
+    double GetDensity() const;
 
     /**
      * @brief Set whether the disk is active

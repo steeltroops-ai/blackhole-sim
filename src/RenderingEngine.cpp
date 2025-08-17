@@ -4,11 +4,18 @@
 #include <fstream>
 #include <sstream>
 #include <cmath>
+#include <chrono>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 #ifdef _WIN32
 #include <windows.h>
 #include <GL/gl.h>
 #endif
+
+using namespace BlackHoleSim;
 
 // Vertex shader source for basic rendering
 const char* vertexShaderSource = R"(
@@ -251,9 +258,9 @@ void RenderingEngine::BeginFrame() {
     UpdateViewMatrix();
     
     // Set matrices in shader
-    SetMatrix4("model", m_modelMatrix);
-    SetMatrix4("view", m_viewMatrix);
-    SetMatrix4("projection", m_projectionMatrix);
+    SetMatrix4("model", m_modelMatrix.data());
+    SetMatrix4("view", m_viewMatrix.data());
+    SetMatrix4("projection", m_projectionMatrix.data());
 }
 
 void RenderingEngine::EndFrame() {
@@ -470,7 +477,7 @@ bool RenderingEngine::CreateShaderProgram() {
     return true;
 }
 
-void RenderingEngine::CreateBuffers() {
+bool RenderingEngine::CreateBuffers() {
     // Generate vertex array object and buffers
     glGenVertexArrays(1, &m_VAO);
     glGenBuffers(1, &m_VBO);
@@ -494,6 +501,7 @@ void RenderingEngine::CreateBuffers() {
     glEnableVertexAttribArray(2);
     
     glBindVertexArray(0);
+    return true;
 }
 
 void RenderingEngine::UpdateProjectionMatrix() {
@@ -589,6 +597,577 @@ void RenderingEngine::RenderGeometry(const std::vector<float>& vertices, const s
     SetBool("useTexture", false);
     
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+}
+
+void RenderingEngine::Render(const BlackHole& blackHole,
+                             const std::vector<std::unique_ptr<Particle>>& particles,
+                             const std::vector<std::unique_ptr<LightRay>>& lightRays,
+                             const AccretionDisk* accretionDisk) {
+    // Update matrices before rendering
+    UpdateMatrices();
+    
+    // Render layers in order (back to front for transparency)
+    
+    // 1. Render spacetime grid (background)
+    if (m_renderLayers & RenderLayer::SPACETIME_GRID) {
+        RenderSpacetimeGrid(blackHole);
+    }
+    
+    // 2. Render coordinate axes
+    if (m_renderLayers & RenderLayer::COORDINATE_AXES) {
+        RenderCoordinateAxes();
+    }
+    
+    // 3. Render accretion disk
+    if ((m_renderLayers & RenderLayer::ACCRETION_DISK) && accretionDisk) {
+        RenderAccretionDisk(*accretionDisk);
+    }
+    
+    // 4. Render photon sphere
+    if (m_renderLayers & RenderLayer::PHOTON_SPHERE) {
+        RenderPhotonSphere(blackHole);
+    }
+    
+    // 5. Render black hole event horizon
+    if (m_renderLayers & RenderLayer::BLACK_HOLE) {
+        RenderBlackHole(blackHole);
+    }
+    
+    // 6. Render particle trails
+    if (m_renderLayers & RenderLayer::PARTICLE_TRAILS) {
+        RenderParticleTrails(particles);
+    }
+    
+    // 7. Render light rays
+    if (m_renderLayers & RenderLayer::LIGHT_RAYS) {
+        RenderLightRays(lightRays);
+    }
+    
+    // 8. Render particles (on top of trails)
+    if (m_renderLayers & RenderLayer::PARTICLES) {
+        RenderParticles(particles);
+    }
+    
+    // 9. Render UI overlay (always on top)
+    if (m_renderLayers & RenderLayer::UI_OVERLAY) {
+        RenderUIOverlay(blackHole);
+    }
+    
+    // Apply post-processing effects
+    ApplyPostProcessing();
+}
+
+void RenderingEngine::ToggleRenderLayer(RenderLayer layer) {
+    m_renderLayers ^= layer;
+}
+
+void RenderingEngine::SetQualitySettings(const QualitySettings& settings) {
+    m_qualitySettings = settings;
+    // Recreate buffers if resolution changed
+    CreateBuffers();
+}
+
+void RenderingEngine::UpdateCamera(double deltaTime) {
+    // Update camera based on mode
+    switch (m_camera.mode) {
+        case CameraMode::FREE_LOOK:
+            // Free camera movement handled by input system
+            break;
+            
+        case CameraMode::ORBIT:
+            // Orbital camera around black hole
+            // This would be implemented with orbital mechanics
+            break;
+            
+        case CameraMode::FOLLOW_PARTICLE:
+            // Follow specific particle
+            if (m_camera.followParticleIndex >= 0) {
+                // Implementation would follow the specified particle
+            }
+            break;
+            
+        case CameraMode::FIXED:
+            // Fixed camera - no updates needed
+            break;
+    }
+    
+    // Update view matrix
+    UpdateViewMatrix();
+}
+
+void RenderingEngine::OnWindowResize(int width, int height) {
+    m_windowWidth = width;
+    m_windowHeight = height;
+    
+    // Update OpenGL viewport
+    glViewport(0, 0, width, height);
+    
+    // Update projection matrix
+    UpdateProjectionMatrix();
+    
+    // Recreate framebuffers with new size
+    CreateFramebuffers();
+}
+
+std::array<int, 2> RenderingEngine::GetWindowSize() const {
+    return {m_windowWidth, m_windowHeight};
+}
+
+bool RenderingEngine::TakeScreenshot(const std::string& filename) const {
+    // Read pixels from framebuffer
+    std::vector<unsigned char> pixels(m_windowWidth * m_windowHeight * 3);
+    glReadPixels(0, 0, m_windowWidth, m_windowHeight, GL_RGB, GL_UNSIGNED_BYTE, pixels.data());
+    
+    // TODO: Save to PNG file (would need image library like stb_image_write)
+    // For now, just return success
+    return true;
+}
+
+// Specific rendering methods
+void RenderingEngine::RenderSpacetimeGrid(const BlackHole& blackHole) {
+    // Generate grid geometry with curvature
+    auto [vertices, indices] = GenerateGrid(100.0f, m_qualitySettings.gridResolution);
+    
+    // Apply spacetime curvature to grid vertices
+    for (size_t i = 0; i < vertices.size(); i += 3) {
+        std::array<float, 3> pos = {vertices[i], vertices[i+1], vertices[i+2]};
+        auto curvature = CalculateSpacetimeCurvature(pos, blackHole);
+        vertices[i] += curvature[0];
+        vertices[i+1] += curvature[1];
+        vertices[i+2] += curvature[2];
+    }
+    
+    // Render the curved grid
+    glUseProgram(m_shaderProgram);
+    SetMatrix4("view", m_viewMatrix.data());
+    SetMatrix4("projection", m_projectionMatrix.data());
+    
+    // Set grid color (dim white)
+    SetFloat("color_r", 0.3f);
+    SetFloat("color_g", 0.3f);
+    SetFloat("color_b", 0.3f);
+    SetFloat("alpha", 0.5f);
+    
+    RenderGeometry(vertices, indices, 0.5f);
+}
+
+void RenderingEngine::RenderParticles(const std::vector<std::unique_ptr<Particle>>& particles) {
+    glUseProgram(m_shaderProgram);
+    SetMatrix4("view", m_viewMatrix.data());
+    SetMatrix4("projection", m_projectionMatrix.data());
+    
+    for (const auto& particle : particles) {
+        if (!particle) continue;
+        
+        auto pos = particle->GetPosition();
+        float radius = m_qualitySettings.particleSize;
+        
+        // Color based on particle properties (temperature, velocity, etc.)
+        float r = 1.0f, g = 0.8f, b = 0.2f; // Default golden color
+        
+        RenderSphere(static_cast<float>(pos[0]), static_cast<float>(pos[1]), 
+                    static_cast<float>(pos[2]), radius, r, g, b, 1.0f);
+    }
+}
+
+void RenderingEngine::RenderParticleTrails(const std::vector<std::unique_ptr<Particle>>& particles) {
+    glUseProgram(m_shaderProgram);
+    SetMatrix4("view", m_viewMatrix.data());
+    SetMatrix4("projection", m_projectionMatrix.data());
+    
+    for (const auto& particle : particles) {
+        if (!particle) continue;
+        
+        const auto& trail = particle->GetTrail();
+        if (trail.size() < 2) continue;
+        
+        // Render trail as connected line segments
+        for (size_t i = 1; i < trail.size(); ++i) {
+            float alpha = static_cast<float>(i) / trail.size(); // Fade older segments
+            
+            RenderLine(static_cast<float>(trail[i-1][0]), static_cast<float>(trail[i-1][1]), static_cast<float>(trail[i-1][2]),
+                      static_cast<float>(trail[i][0]), static_cast<float>(trail[i][1]), static_cast<float>(trail[i][2]),
+                      1.0f, 0.8f, 0.2f, alpha * 0.7f);
+        }
+    }
+}
+
+void RenderingEngine::RenderLightRays(const std::vector<std::unique_ptr<LightRay>>& lightRays) {
+    glUseProgram(m_shaderProgram);
+    SetMatrix4("view", m_viewMatrix.data());
+    SetMatrix4("projection", m_projectionMatrix.data());
+    
+    for (const auto& ray : lightRays) {
+        if (!ray) continue;
+        
+        const auto& path = ray->GetPath();
+        if (path.size() < 2) continue;
+        
+        // Color based on wavelength (redshift)
+        double wavelength = ray->GetWavelength();
+        float r, g, b;
+        if (wavelength < 450e-9) { // Blue
+            r = 0.2f; g = 0.2f; b = 1.0f;
+        } else if (wavelength < 550e-9) { // Green
+            r = 0.2f; g = 1.0f; b = 0.2f;
+        } else { // Red
+            r = 1.0f; g = 0.2f; b = 0.2f;
+        }
+        
+        // Render ray path
+        for (size_t i = 1; i < path.size(); ++i) {
+            RenderLine(static_cast<float>(path[i-1][0]), static_cast<float>(path[i-1][1]), static_cast<float>(path[i-1][2]),
+                      static_cast<float>(path[i][0]), static_cast<float>(path[i][1]), static_cast<float>(path[i][2]),
+                      r, g, b, 0.8f);
+        }
+    }
+}
+
+void RenderingEngine::RenderAccretionDisk(const AccretionDisk& accretionDisk) {
+    glUseProgram(m_shaderProgram);
+    SetMatrix4("view", m_viewMatrix.data());
+    SetMatrix4("projection", m_projectionMatrix.data());
+    
+    double innerRadius = accretionDisk.GetInnerRadius();
+    double outerRadius = accretionDisk.GetOuterRadius();
+    int resolution = m_qualitySettings.diskResolution;
+    
+    // Generate disk geometry as rings
+    std::vector<float> vertices;
+    std::vector<unsigned int> indices;
+    
+    int rings = resolution / 4;
+    int sectors = resolution;
+    
+    for (int r = 0; r < rings; ++r) {
+        double radius = innerRadius + (outerRadius - innerRadius) * r / (rings - 1);
+        
+        for (int s = 0; s < sectors; ++s) {
+            double angle = 2.0 * M_PI * s / sectors;
+            
+            float x = static_cast<float>(radius * std::cos(angle));
+            float y = static_cast<float>(radius * std::sin(angle));
+            float z = 0.0f; // Assume disk in xy-plane
+            
+            // Get disk color at this radius
+            auto color = accretionDisk.GetDiskColor(radius);
+            
+            vertices.insert(vertices.end(), {x, y, z, color[0], color[1], color[2]});
+        }
+    }
+    
+    // Generate indices for triangles
+    for (int r = 0; r < rings - 1; ++r) {
+        for (int s = 0; s < sectors; ++s) {
+            int current = r * sectors + s;
+            int next = r * sectors + (s + 1) % sectors;
+            int above = (r + 1) * sectors + s;
+            int aboveNext = (r + 1) * sectors + (s + 1) % sectors;
+            
+            // Two triangles per quad
+            indices.insert(indices.end(), {current, next, above});
+            indices.insert(indices.end(), {next, aboveNext, above});
+        }
+    }
+    
+    RenderGeometry(vertices, indices, 0.8f);
+}
+
+void RenderingEngine::RenderBlackHole(const BlackHole& blackHole) {
+    auto pos = blackHole.GetPosition();
+    double radius = blackHole.GetSchwarzschildRadius();
+    
+    // Render as black sphere
+    RenderSphere(static_cast<float>(pos[0]), static_cast<float>(pos[1]), static_cast<float>(pos[2]),
+                static_cast<float>(radius), 0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+void RenderingEngine::RenderPhotonSphere(const BlackHole& blackHole) {
+    auto pos = blackHole.GetPosition();
+    double radius = 1.5 * blackHole.GetSchwarzschildRadius(); // Photon sphere at 1.5 Rs
+    
+    // Render as transparent orange sphere
+    RenderSphere(static_cast<float>(pos[0]), static_cast<float>(pos[1]), static_cast<float>(pos[2]),
+                static_cast<float>(radius), 1.0f, 0.5f, 0.0f, 0.3f);
+}
+
+void RenderingEngine::RenderCoordinateAxes() {
+    float axisLength = 50.0f;
+    
+    // X-axis (red)
+    RenderLine(0.0f, 0.0f, 0.0f, axisLength, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f);
+    
+    // Y-axis (green)
+    RenderLine(0.0f, 0.0f, 0.0f, 0.0f, axisLength, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f);
+    
+    // Z-axis (blue)
+    RenderLine(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, axisLength, 0.0f, 0.0f, 1.0f, 1.0f);
+}
+
+void RenderingEngine::RenderUIOverlay(const BlackHole& blackHole) {
+    // TODO: Implement text rendering for UI overlay
+    // This would display simulation parameters, FPS, etc.
+    // For now, just a placeholder
+}
+
+void RenderingEngine::ApplyPostProcessing() {
+    // TODO: Implement post-processing effects
+    // Could include bloom, tone mapping, etc.
+}
+
+// Utility methods
+std::pair<std::vector<float>, std::vector<unsigned int>> RenderingEngine::GenerateGrid(float size, int resolution) {
+    std::vector<float> vertices;
+    std::vector<unsigned int> indices;
+    
+    float step = size / resolution;
+    float halfSize = size * 0.5f;
+    
+    // Generate grid vertices
+    for (int i = 0; i <= resolution; ++i) {
+        for (int j = 0; j <= resolution; ++j) {
+            float x = -halfSize + i * step;
+            float z = -halfSize + j * step;
+            float y = 0.0f; // Grid in xz-plane
+            
+            vertices.insert(vertices.end(), {x, y, z});
+        }
+    }
+    
+    // Generate grid indices for lines
+    int width = resolution + 1;
+    
+    // Horizontal lines
+    for (int i = 0; i < width; ++i) {
+        for (int j = 0; j < resolution; ++j) {
+            indices.push_back(i * width + j);
+            indices.push_back(i * width + j + 1);
+        }
+    }
+    
+    // Vertical lines
+    for (int i = 0; i < resolution; ++i) {
+        for (int j = 0; j < width; ++j) {
+            indices.push_back(i * width + j);
+            indices.push_back((i + 1) * width + j);
+        }
+    }
+    
+    return {vertices, indices};
+}
+
+std::array<float, 3> RenderingEngine::CalculateSpacetimeCurvature(const std::array<float, 3>& position, const BlackHole& blackHole) {
+    auto bhPos = blackHole.GetPosition();
+    double mass = blackHole.GetMass();
+    
+    // Calculate distance from black hole
+    double dx = position[0] - bhPos[0];
+    double dy = position[1] - bhPos[1];
+    double dz = position[2] - bhPos[2];
+    double r = std::sqrt(dx*dx + dy*dy + dz*dz);
+    
+    if (r < 1e-6) return {0.0f, 0.0f, 0.0f}; // Avoid division by zero
+    
+    // Simplified curvature calculation (not physically accurate, just for visualization)
+    double G = 6.67430e-11; // Gravitational constant
+    double c = 299792458;   // Speed of light
+    double rs = 2.0 * G * mass / (c * c); // Schwarzschild radius
+    
+    // Curvature strength decreases with distance
+    double curvatureStrength = rs / (r * r) * 0.1; // Scale factor for visualization
+    
+    // Direction towards black hole
+    double nx = dx / r;
+    double ny = dy / r;
+    double nz = dz / r;
+    
+    return {
+        static_cast<float>(-curvatureStrength * nx),
+        static_cast<float>(-curvatureStrength * ny),
+        static_cast<float>(-curvatureStrength * nz)
+    };
+}
+
+void RenderingEngine::UpdatePerformanceMetrics() {
+    static auto lastTime = std::chrono::high_resolution_clock::now();
+    static int frameCount = 0;
+    
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    frameCount++;
+    
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastTime);
+    if (duration.count() >= 1000) { // Update every second
+        m_fps = frameCount * 1000.0f / duration.count();
+        frameCount = 0;
+        lastTime = currentTime;
+    }
+}
+
+float RenderingEngine::GetFPS() const {
+    return m_fps;
+}
+
+void RenderingEngine::SetBackgroundColor(float r, float g, float b, float a) {
+    m_backgroundColor[0] = r;
+    m_backgroundColor[1] = g;
+    m_backgroundColor[2] = b;
+    m_backgroundColor[3] = a;
+}
+
+void RenderingEngine::LoadShaders() {
+    // Enhanced vertex shader with color support
+    const char* vertexShaderSource = R"(
+        #version 330 core
+        layout (location = 0) in vec3 aPos;
+        layout (location = 1) in vec3 aColor;
+        
+        uniform mat4 model;
+        uniform mat4 view;
+        uniform mat4 projection;
+        
+        out vec3 vertexColor;
+        
+        void main() {
+            gl_Position = projection * view * model * vec4(aPos, 1.0);
+            vertexColor = aColor;
+        }
+    )";
+    
+    // Enhanced fragment shader with uniform color support
+    const char* fragmentShaderSource = R"(
+        #version 330 core
+        in vec3 vertexColor;
+        out vec4 FragColor;
+        
+        uniform float color_r;
+        uniform float color_g;
+        uniform float color_b;
+        uniform float alpha;
+        uniform bool useVertexColor;
+        
+        void main() {
+            if (useVertexColor) {
+                FragColor = vec4(vertexColor, alpha);
+            } else {
+                FragColor = vec4(color_r, color_g, color_b, alpha);
+            }
+        }
+    )";
+    
+    // Delete existing shader program if it exists
+    if (m_shaderProgram != 0) {
+        glDeleteProgram(m_shaderProgram);
+    }
+    
+    m_shaderProgram = CreateShaderProgram(vertexShaderSource, fragmentShaderSource);
+}
+
+void RenderingEngine::CreateBuffers() {
+    // Delete existing buffers if they exist
+    if (m_VAO != 0) {
+        glDeleteVertexArrays(1, &m_VAO);
+        glDeleteBuffers(1, &m_VBO);
+        glDeleteBuffers(1, &m_EBO);
+    }
+    
+    // Generate new buffers
+    glGenVertexArrays(1, &m_VAO);
+    glGenBuffers(1, &m_VBO);
+    glGenBuffers(1, &m_EBO);
+    
+    glBindVertexArray(m_VAO);
+    
+    // Bind VBO and set up vertex attributes
+    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+    
+    // Position attribute (location 0)
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    
+    // Color attribute (location 1)
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    
+    // Bind EBO
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+    
+    glBindVertexArray(0);
+}
+
+void RenderingEngine::CreateFramebuffers() {
+    // Delete existing framebuffers if they exist
+    if (m_framebuffer != 0) {
+        glDeleteFramebuffers(1, &m_framebuffer);
+        glDeleteTextures(1, &m_colorTexture);
+        glDeleteRenderbuffers(1, &m_depthRenderbuffer);
+    }
+    
+    // Generate framebuffer
+    glGenFramebuffers(1, &m_framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
+    
+    // Create color texture
+    glGenTextures(1, &m_colorTexture);
+    glBindTexture(GL_TEXTURE_2D, m_colorTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_windowWidth, m_windowHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_colorTexture, 0);
+    
+    // Create depth renderbuffer
+    glGenRenderbuffers(1, &m_depthRenderbuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, m_depthRenderbuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_windowWidth, m_windowHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthRenderbuffer);
+    
+    // Check framebuffer completeness
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        // Handle error - for now just continue
+    }
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+std::pair<std::vector<float>, std::vector<unsigned int>> RenderingEngine::GenerateSphere(float radius, int segments) {
+    std::vector<float> vertices;
+    std::vector<unsigned int> indices;
+    
+    // Generate sphere vertices
+    for (int i = 0; i <= segments; ++i) {
+        float phi = M_PI * i / segments; // Latitude angle
+        
+        for (int j = 0; j <= segments; ++j) {
+            float theta = 2.0f * M_PI * j / segments; // Longitude angle
+            
+            float x = radius * std::sin(phi) * std::cos(theta);
+            float y = radius * std::cos(phi);
+            float z = radius * std::sin(phi) * std::sin(theta);
+            
+            // Default white color
+            vertices.insert(vertices.end(), {x, y, z, 1.0f, 1.0f, 1.0f});
+        }
+    }
+    
+    // Generate sphere indices
+    for (int i = 0; i < segments; ++i) {
+        for (int j = 0; j < segments; ++j) {
+            int first = i * (segments + 1) + j;
+            int second = first + segments + 1;
+            
+            // First triangle
+            indices.insert(indices.end(), {first, second, first + 1});
+            
+            // Second triangle
+            indices.insert(indices.end(), {second, second + 1, first + 1});
+        }
+    }
+    
+    return {vertices, indices};
+}
+
+void RenderingEngine::UpdateMatrices() {
+    UpdateViewMatrix();
+    UpdateProjectionMatrix();
 }
 
 #ifdef _WIN32

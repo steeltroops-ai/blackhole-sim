@@ -107,7 +107,7 @@ bool SimulationManager::InitializeSubsystems() {
     // Initialize Physics Engine
     std::cout << "  Initializing Physics Engine...\n";
     m_physicsEngine.reset(new PhysicsEngine());
-    if (!m_physicsEngine->Initialize()) {
+    if (!m_physicsEngine->Initialize(m_config.physicsConfig)) {
         std::cerr << "    Failed to initialize Physics Engine\n";
         return false;
     }

@@ -95,6 +95,13 @@ PFNGLGETUNIFORMLOCATIONPROC glad_glGetUniformLocation = NULL;
 PFNGLUNIFORMMATRIX4FVPROC glad_glUniformMatrix4fv = NULL;
 PFNGLUNIFORM1FPROC glad_glUniform1f = NULL;
 PFNGLUNIFORM1IPROC glad_glUniform1i = NULL;
+PFNGLDELETESHADERPROC glad_glDeleteShader = NULL;
+PFNGLGETSHADERINFOLOGPROC glad_glGetShaderInfoLog = NULL;
+PFNGLGETPROGRAMINFOLOGPROC glad_glGetProgramInfoLog = NULL;
+PFNGLPOINTSIZEPROC glad_glPointSize = NULL;
+PFNGLDELETEVERTEXARRAYSPROC glad_glDeleteVertexArrays = NULL;
+PFNGLDELETEBUFFERSPROC glad_glDeleteBuffers = NULL;
+PFNGLDELETEPROGRAMPROC glad_glDeleteProgram = NULL;
 
 static void load_GL_VERSION_1_0(void) {
     glad_glClear = (PFNGLCLEARPROC)get_proc("glClear");
@@ -110,6 +117,7 @@ static void load_GL_VERSION_1_5(void) {
     glad_glGenBuffers = (PFNGLGENBUFFERSPROC)get_proc("glGenBuffers");
     glad_glBindBuffer = (PFNGLBINDBUFFERPROC)get_proc("glBindBuffer");
     glad_glBufferData = (PFNGLBUFFERDATAPROC)get_proc("glBufferData");
+    glad_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)get_proc("glDeleteBuffers");
 }
 
 static void load_GL_VERSION_2_0(void) {
@@ -126,6 +134,11 @@ static void load_GL_VERSION_2_0(void) {
     glad_glUniformMatrix4fv = (PFNGLUNIFORMMATRIX4FVPROC)get_proc("glUniformMatrix4fv");
     glad_glUniform1f = (PFNGLUNIFORM1FPROC)get_proc("glUniform1f");
     glad_glUniform1i = (PFNGLUNIFORM1IPROC)get_proc("glUniform1i");
+    glad_glDeleteShader = (PFNGLDELETESHADERPROC)get_proc("glDeleteShader");
+    glad_glGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)get_proc("glGetShaderInfoLog");
+    glad_glGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)get_proc("glGetProgramInfoLog");
+    glad_glPointSize = (PFNGLPOINTSIZEPROC)get_proc("glPointSize");
+    glad_glDeleteProgram = (PFNGLDELETEPROGRAMPROC)get_proc("glDeleteProgram");
 }
 
 static void load_GL_VERSION_3_0(void) {
@@ -133,6 +146,7 @@ static void load_GL_VERSION_3_0(void) {
     glad_glBindVertexArray = (PFNGLBINDVERTEXARRAYPROC)get_proc("glBindVertexArray");
     glad_glEnableVertexAttribArray = (PFNGLENABLEVERTEXATTRIBARRAYPROC)get_proc("glEnableVertexAttribArray");
     glad_glVertexAttribPointer = (PFNGLVERTEXATTRIBPOINTERPROC)get_proc("glVertexAttribPointer");
+    glad_glDeleteVertexArrays = (PFNGLDELETEVERTEXARRAYSPROC)get_proc("glDeleteVertexArrays");
 }
 
 int gladLoadGL(void) {

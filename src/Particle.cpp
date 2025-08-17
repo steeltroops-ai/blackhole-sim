@@ -7,6 +7,10 @@
 #include <cmath>
 #include <algorithm>
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 namespace BlackHoleSim {
 
 // Physical constants
@@ -126,7 +130,7 @@ void Particle::SetType(Type type) {
     // Update default rendering properties based on new type
     switch (type) {
         case Type::TEST_PARTICLE:
-            if (m_color.x == 1.0 && m_color.y == 1.0 && m_color.z == 0.0) { // Only if still default yellow
+            if (m_color.x() == 1.0 && m_color.y() == 1.0 && m_color.z() == 0.0) { // Only if still default yellow
                 m_color = Vector4(1.0, 1.0, 1.0, 1.0); // White
             }
             break;
@@ -271,14 +275,14 @@ void Particle::ReserveTrajectoryCapacity(size_t capacity) {
 }
 
 // Coordinate conversion utilities (static methods)
-Particle::SphericalCoords Particle::CartesianToSpherical(const Vector3& cartesian) {
+SphericalCoords Particle::CartesianToSpherical(const Vector3& cartesian) {
     SphericalCoords spherical;
     
     spherical.r = cartesian.Magnitude();
     
     if (spherical.r > 1e-10) {
-        spherical.theta = std::acos(std::clamp(cartesian.z / spherical.r, -1.0, 1.0));
-        spherical.phi = std::atan2(cartesian.y, cartesian.x);
+        spherical.theta = std::acos(std::clamp(cartesian.z() / spherical.r, -1.0, 1.0));
+        spherical.phi = std::atan2(cartesian.y(), cartesian.x());
     } else {
         spherical.theta = 0.0;
         spherical.phi = 0.0;
@@ -351,55 +355,7 @@ void Particle::ApplyImpulse(const Vector3& impulse) {
     }
 }
 
-double Particle::GetDistanceTo(const Particle& other) const {
-    return (m_position - other.m_position).Magnitude();
-}
-
-Vector3 Particle::GetDirectionTo(const Particle& other) const {
-    Vector3 direction = other.m_position - m_position;
-    double distance = direction.Magnitude();
-    
-    if (distance > 1e-10) {
-        return direction / distance;
-    }
-    
-    return Vector3(0.0, 0.0, 0.0);
-}
-
-bool Particle::IsColliding(const Particle& other, double threshold) const {
-    double distance = GetDistanceTo(other);
-    double combinedSize = (m_size + other.m_size) * threshold;
-    return distance < combinedSize;
-}
-
-// Relativistic calculations
-double Particle::GetLorentzFactor() const {
-    double v = GetSpeed();
-    double beta = v / c;
-    
-    if (beta >= 1.0) {
-        return std::numeric_limits<double>::infinity();
-    }
-    
-    return 1.0 / std::sqrt(1.0 - beta * beta);
-}
-
-double Particle::GetRelativisticMass() const {
-    return m_mass * GetLorentzFactor();
-}
-
-Vector3 Particle::GetRelativisticMomentum() const {
-    return m_velocity * GetRelativisticMass();
-}
-
-double Particle::GetRelativisticEnergy() const {
-    double gamma = GetLorentzFactor();
-    return gamma * m_mass * c * c;
-}
-
-double Particle::GetRelativisticKineticEnergy() const {
-    double gamma = GetLorentzFactor();
-    return (gamma - 1.0) * m_mass * c * c;
-}
+// Utility methods removed - not declared in header
+// GetDistanceTo, GetDirectionTo, IsColliding, GetLorentzFactor methods removed
 
 } // namespace BlackHoleSim
