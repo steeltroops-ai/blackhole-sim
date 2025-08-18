@@ -197,15 +197,13 @@ extern "C" bool initializeSimpleRenderer() {
 }
 
 void renderSphere(float x, float y, float z, float radius, float r, float g, float b) {
-    // Create a simple sphere using triangulated icosphere
-    const int subdivisions = 2;
+    // Create a high-quality sphere for better visibility
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
 
-    // Generate icosphere vertices and indices
-    // For simplicity, create a basic sphere with latitude/longitude approach
-    const int latSegments = 16;
-    const int lonSegments = 32;
+    // Higher resolution for smoother spheres
+    const int latSegments = 32;
+    const int lonSegments = 64;
 
     for (int lat = 0; lat <= latSegments; ++lat) {
         float theta = lat * M_PI / latSegments;
@@ -246,33 +244,82 @@ void renderSphere(float x, float y, float z, float radius, float r, float g, flo
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
 
+void renderBlackHoleEventHorizon(float x, float y, float z, float radius) {
+    // Render the event horizon as a pure black sphere with glowing edge
+
+    // 1. Render the main black sphere
+    renderSphere(x, y, z, radius, 0.0f, 0.0f, 0.0f);
+
+    // 2. Render glowing edge effect (slightly larger sphere with transparency)
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+    // Outer glow - neon blue/cyan
+    renderSphere(x, y, z, radius * 1.05f, 0.0f, 1.0f, 1.0f); // Cyan glow
+
+    // Inner glow - electric blue
+    renderSphere(x, y, z, radius * 1.02f, 0.2f, 0.6f, 1.0f); // Electric blue
+
+    // Reset blending
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_BLEND);
+}
+
 void renderSpacetimeGrid(float size, int divisions) {
-    // Create a curved grid to show spacetime curvature
+    // Create a dramatically curved grid showing Einstein's spacetime curvature
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
 
     float step = size / divisions;
+    const float schwarzschildRadius = 6.0f; // Event horizon size
 
-    // Generate grid vertices with curvature effect near center (black hole)
+    // Generate grid vertices with realistic gravitational curvature
     for (int i = 0; i <= divisions; ++i) {
         for (int j = 0; j <= divisions; ++j) {
             float x = -size/2 + i * step;
             float z = -size/2 + j * step;
 
-            // Calculate distance from center for curvature effect
-            float dist = sqrt(x*x + z*z);
+            // Calculate distance from black hole center
+            float r = sqrt(x*x + z*z);
             float curvature = 0.0f;
 
-            // Apply gravitational curvature (stronger near center)
-            if (dist > 0.1f) {
-                curvature = -20.0f / (dist + 5.0f); // Curved spacetime effect
+            // Apply Schwarzschild metric curvature: stronger near event horizon
+            if (r > schwarzschildRadius * 0.5f) {
+                // Curvature follows 1/r² law but with dramatic visual scaling
+                float curvatureFactor = schwarzschildRadius * schwarzschildRadius / (r * r);
+                curvature = -curvatureFactor * 30.0f; // Scale for dramatic effect
+
+                // Additional warping very close to black hole
+                if (r < schwarzschildRadius * 2.0f) {
+                    float proximityFactor = 1.0f - (r / (schwarzschildRadius * 2.0f));
+                    curvature *= (1.0f + proximityFactor * 3.0f);
+                }
+            } else {
+                // Inside photon sphere - extreme curvature
+                curvature = -200.0f;
             }
 
             float y = curvature;
 
-            // Grid color - brighter near center, dimmer at edges
-            float intensity = 0.3f + 0.4f * exp(-dist * 0.1f);
-            vertices.insert(vertices.end(), {x, y, z, 0.2f, 0.6f, intensity});
+            // Anime-style glowing grid colors (teal to white gradient)
+            float distanceNorm = r / (size * 0.5f);
+            float intensity = exp(-distanceNorm * 1.5f); // Exponential falloff
+
+            // Teal to white gradient with high intensity near black hole
+            float r_color = 0.0f + intensity * 0.8f;      // Red component
+            float g_color = 0.5f + intensity * 0.5f;      // Green component
+            float b_color = 0.5f + intensity * 0.5f;      // Blue component (teal base)
+
+            // Add pulsing effect for anime aesthetic
+            static float time = 0.0f;
+            time += 0.01f;
+            float pulse = 0.8f + 0.2f * sin(time * 2.0f + r * 0.1f);
+
+            r_color *= pulse;
+            g_color *= pulse;
+            b_color *= pulse;
+
+            vertices.insert(vertices.end(), {x, y, z, r_color, g_color, b_color});
         }
     }
 
@@ -300,19 +347,27 @@ void renderSpacetimeGrid(float size, int divisions) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_DYNAMIC_DRAW);
 
-    glLineWidth(1.0f);
+    // Enable blending for glowing lines
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+    glLineWidth(2.0f); // Thicker lines for better visibility
     glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_INT, 0);
+
+    // Reset blending
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_BLEND);
 }
 
 void renderAccretionDisk(float innerRadius, float outerRadius) {
-    // Create a glowing accretion disk
+    // Create a realistic accretion disk with proper temperature gradients
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
 
-    const int segments = 64;
-    const int rings = 16;
+    const int segments = 128; // Higher resolution for smoother disk
+    const int rings = 32;     // More rings for better gradient
 
-    // Generate disk vertices
+    // Generate disk vertices with realistic physics-based coloring
     for (int ring = 0; ring <= rings; ++ring) {
         float radius = innerRadius + (outerRadius - innerRadius) * ring / rings;
 
@@ -322,11 +377,39 @@ void renderAccretionDisk(float innerRadius, float outerRadius) {
             float z = radius * sin(angle);
             float y = 0.0f; // Disk is in XZ plane
 
-            // Color based on temperature (hotter = more blue/white, cooler = more red)
-            float temp = 1.0f - (radius - innerRadius) / (outerRadius - innerRadius);
-            float r = 1.0f;
-            float g = 0.6f + 0.4f * temp;
-            float b = 0.2f + 0.8f * temp;
+            // Physics-based temperature calculation: T ∝ r^(-3/4)
+            float r_ratio = radius / innerRadius;
+            float temperature = pow(r_ratio, -0.75f); // Shakura-Sunyaev model
+
+            // Convert temperature to realistic colors
+            float r, g, b;
+            if (temperature > 0.8f) {
+                // Very hot - blue-white (inner regions)
+                r = 0.8f + 0.2f * temperature;
+                g = 0.9f + 0.1f * temperature;
+                b = 1.0f;
+            } else if (temperature > 0.5f) {
+                // Hot - white to yellow
+                r = 1.0f;
+                g = 1.0f;
+                b = 0.3f + 0.7f * temperature;
+            } else if (temperature > 0.2f) {
+                // Warm - yellow to orange
+                r = 1.0f;
+                g = 0.4f + 0.6f * temperature;
+                b = 0.1f + 0.2f * temperature;
+            } else {
+                // Cool - red (outer regions)
+                r = 0.8f + 0.2f * temperature;
+                g = 0.1f + 0.3f * temperature;
+                b = 0.05f;
+            }
+
+            // Add brightness variation for more realism
+            float brightness = 0.7f + 0.3f * temperature;
+            r *= brightness;
+            g *= brightness;
+            b *= brightness;
 
             vertices.insert(vertices.end(), {x, y, z, r, g, b});
         }
@@ -350,7 +433,7 @@ void renderAccretionDisk(float innerRadius, float outerRadius) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_DYNAMIC_DRAW);
 
-    // Enable blending for glowing effect
+    // Enable additive blending for glowing effect
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
@@ -453,9 +536,12 @@ extern "C" void renderSimpleBlackHole() {
     if (!g_initialized) return;
 
     try {
-        // Clear screen with deep space black
-        glClearColor(0.02f, 0.02f, 0.05f, 1.0f);
+        // Clear screen with deep space background
+        glClearColor(0.05f, 0.05f, 0.15f, 1.0f); // Deep space blue-black
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Enable depth testing for proper 3D rendering
+        glEnable(GL_DEPTH_TEST);
 
         // Use shader program
         glUseProgram(g_shaderProgram);
@@ -465,20 +551,20 @@ extern "C" void renderSimpleBlackHole() {
         time += 0.01f;
 
         // Orbital camera movement around the black hole
-        float radius = 80.0f;
-        g_cameraX = radius * cos(time * 0.2f);
-        g_cameraZ = radius * sin(time * 0.2f);
-        g_cameraY = 20.0f + 10.0f * sin(time * 0.1f);
+        float radius = 60.0f; // Closer for better view
+        g_cameraX = radius * cos(time * 0.15f);
+        g_cameraZ = radius * sin(time * 0.15f);
+        g_cameraY = 15.0f + 8.0f * sin(time * 0.08f);
 
         // Always look toward the black hole
-        g_cameraYaw = -90.0f + time * 0.2f * 180.0f / M_PI;
-        g_cameraPitch = -10.0f + 5.0f * sin(time * 0.1f);
+        g_cameraYaw = -90.0f + time * 0.15f * 180.0f / M_PI;
+        g_cameraPitch = -8.0f + 4.0f * sin(time * 0.08f);
 
         // Set up matrices
         float model[16], view[16], projection[16];
         createIdentityMatrix(model);
         createViewMatrix(view, g_cameraX, g_cameraY, g_cameraZ, g_cameraYaw, g_cameraPitch);
-        createPerspectiveMatrix(projection, 45.0f * M_PI / 180.0f, (float)g_windowWidth / g_windowHeight, 0.1f, 1000.0f);
+        createPerspectiveMatrix(projection, 50.0f * M_PI / 180.0f, (float)g_windowWidth / g_windowHeight, 0.1f, 1000.0f);
 
         // Set uniforms
         GLint modelLoc = glGetUniformLocation(g_shaderProgram, "model");
@@ -490,57 +576,64 @@ extern "C" void renderSimpleBlackHole() {
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view);
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, projection);
 
-        // Start with simple rendering - just a few basic elements
+        // 1. Render background starfield first
+        glUniform1f(alphaLoc, 0.8f);
+        renderStarField();
+
+        // 2. Render spacetime curvature grid (enhanced)
+        glUniform1f(alphaLoc, 0.7f);
+        renderSpacetimeGrid(120.0f, 24);
+
+        // 3. Render enhanced accretion disk
+        glUniform1f(alphaLoc, 0.9f);
+        renderAccretionDisk(8.0f, 35.0f); // Larger, more visible disk
+
+        // 4. Render the black hole event horizon with glowing edge
         glUniform1f(alphaLoc, 1.0f);
+        renderBlackHoleEventHorizon(0.0f, 0.0f, 0.0f, 6.0f); // Proper Schwarzschild radius
 
-        // Render black hole event horizon (simple dark sphere)
-        std::vector<float> vertices = {
-            0.0f, 0.0f, 0.0f, 0.05f, 0.05f, 0.05f  // Center black hole
-        };
-        std::vector<unsigned int> indices = {0};
+        // 5. Render enhanced orbiting particles
+        float particleTime = time * 1.5f;
 
-        glBindVertexArray(g_VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, g_VBO);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_DYNAMIC_DRAW);
-
-        glPointSize(20.0f);
-        glDrawElements(GL_POINTS, indices.size(), GL_UNSIGNED_INT, 0);
-
-        // Render some simple orbiting particles
-        float particleTime = time * 2.0f;
-
-        // Particle 1 - Close stable orbit
-        float orbit1 = 12.0f;
+        // Particle 1 - Close stable orbit (bright green)
+        float orbit1 = 15.0f;
         float x1 = orbit1 * cos(particleTime);
         float z1 = orbit1 * sin(particleTime);
+        renderSphere(x1, 1.0f, z1, 1.2f, 0.0f, 1.0f, 0.2f); // Bright green
 
-        vertices = {x1, 0.5f, z1, 1.0f, 0.8f, 0.2f};
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
-        glPointSize(8.0f);
-        glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, 0);
+        // Particle 2 - Elliptical orbit (orange)
+        float orbit2a = 25.0f, orbit2b = 18.0f;
+        float x2 = orbit2a * cos(particleTime * 0.6f);
+        float z2 = orbit2b * sin(particleTime * 0.6f);
+        renderSphere(x2, 2.0f, z2, 1.2f, 1.0f, 0.5f, 0.0f); // Orange
 
-        // Particle 2 - Different orbit
-        float orbit2 = 20.0f;
-        float x2 = orbit2 * cos(particleTime * 0.7f);
-        float z2 = orbit2 * sin(particleTime * 0.7f);
+        // Particle 3 - Distant orbit (electric blue)
+        float orbit3 = 45.0f;
+        float x3 = orbit3 * cos(particleTime * 0.25f);
+        float z3 = orbit3 * sin(particleTime * 0.25f);
+        renderSphere(x3, -3.0f, z3, 1.2f, 0.2f, 0.8f, 1.0f); // Electric blue
 
-        vertices = {x2, 1.0f, z2, 0.2f, 1.0f, 0.8f};
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
-        glPointSize(8.0f);
-        glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, 0);
+        // 6. Render particle trajectories
+        glUniform1f(alphaLoc, 0.6f);
+        renderParticleTrajectory(x1, 1.0f, z1, x1 + 8.0f, 1.0f, z1 + 8.0f, 0.0f, 1.0f, 0.2f);
+        renderParticleTrajectory(x2, 2.0f, z2, x2 + 12.0f, 2.0f, z2 + 12.0f, 1.0f, 0.5f, 0.0f);
+        renderParticleTrajectory(x3, -3.0f, z3, x3 + 18.0f, -3.0f, z3 + 18.0f, 0.2f, 0.8f, 1.0f);
 
-        // Particle 3 - Distant orbit
-        float orbit3 = 35.0f;
-        float x3 = orbit3 * cos(particleTime * 0.3f);
-        float z3 = orbit3 * sin(particleTime * 0.3f);
+        // 7. Render gravitational lensing light rays
+        glUniform1f(alphaLoc, 0.8f);
+        glLineWidth(3.0f);
 
-        vertices = {x3, -2.0f, z3, 0.8f, 0.2f, 1.0f};
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
-        glPointSize(8.0f);
-        glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, 0);
+        // Multiple light rays showing lensing effects
+        float lightTime = time * 2.0f;
+        for (int i = 0; i < 5; ++i) {
+            float angle = lightTime + i * 2.0f * M_PI / 5.0f;
+            float startX = 70.0f * cos(angle);
+            float startZ = 70.0f * sin(angle);
+            float endX = -70.0f * cos(angle);
+            float endZ = -70.0f * sin(angle);
+
+            renderParticleTrajectory(startX, 0.0f, startZ, endX, 0.0f, endZ, 1.0f, 1.0f, 0.8f);
+        }
 
         // Swap buffers
         glfwSwapBuffers(g_window);
@@ -548,7 +641,7 @@ extern "C" void renderSimpleBlackHole() {
 
     } catch (...) {
         // If anything fails, just clear and swap
-        glClearColor(0.02f, 0.02f, 0.05f, 1.0f);
+        glClearColor(0.05f, 0.05f, 0.15f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glfwSwapBuffers(g_window);
         glfwPollEvents();

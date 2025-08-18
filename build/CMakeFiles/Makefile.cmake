@@ -65,7 +65,6 @@ set(CMAKE_MAKEFILE_PRODUCTS
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/BlackHoleSimulation.dir/DependInfo.cmake"
-  "CMakeFiles/test_3d_rendering.dir/DependInfo.cmake"
   "tests/CMakeFiles/physics_test.dir/DependInfo.cmake"
   "tests/CMakeFiles/run_tests.dir/DependInfo.cmake"
   "tests/CMakeFiles/minimal_test.dir/DependInfo.cmake"

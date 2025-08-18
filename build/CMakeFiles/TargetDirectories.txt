@@ -1,5 +1,4 @@
 C:/Omniverse/Projects/blackhole-sim/build/CMakeFiles/BlackHoleSimulation.dir
-C:/Omniverse/Projects/blackhole-sim/build/CMakeFiles/test_3d_rendering.dir
 C:/Omniverse/Projects/blackhole-sim/build/CMakeFiles/test.dir
 C:/Omniverse/Projects/blackhole-sim/build/CMakeFiles/edit_cache.dir
 C:/Omniverse/Projects/blackhole-sim/build/CMakeFiles/rebuild_cache.dir

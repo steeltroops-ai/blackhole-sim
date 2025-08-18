@@ -63,13 +63,11 @@ CMAKE_BINARY_DIR = C:\Omniverse\Projects\blackhole-sim\build
 
 # The main recursive "all" target.
 all: CMakeFiles/BlackHoleSimulation.dir/all
-all: CMakeFiles/test_3d_rendering.dir/all
 all: tests/all
 .PHONY : all
 
 # The main recursive "codegen" target.
 codegen: CMakeFiles/BlackHoleSimulation.dir/codegen
-codegen: CMakeFiles/test_3d_rendering.dir/codegen
 codegen: tests/codegen
 .PHONY : codegen
 
@@ -79,7 +77,6 @@ preinstall: tests/preinstall
 
 # The main recursive "clean" target.
 clean: CMakeFiles/BlackHoleSimulation.dir/clean
-clean: CMakeFiles/test_3d_rendering.dir/clean
 clean: tests/clean
 .PHONY : clean
 
@@ -137,38 +134,6 @@ CMakeFiles/BlackHoleSimulation.dir/codegen:
 CMakeFiles/BlackHoleSimulation.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\BlackHoleSimulation.dir\build.make CMakeFiles/BlackHoleSimulation.dir/clean
 .PHONY : CMakeFiles/BlackHoleSimulation.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/test_3d_rendering.dir
-
-# All Build rule for target.
-CMakeFiles/test_3d_rendering.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\test_3d_rendering.dir\build.make CMakeFiles/test_3d_rendering.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\test_3d_rendering.dir\build.make CMakeFiles/test_3d_rendering.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles --progress-num=18,19,20,21 "Built target test_3d_rendering"
-.PHONY : CMakeFiles/test_3d_rendering.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/test_3d_rendering.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles 4
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/test_3d_rendering.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles 0
-.PHONY : CMakeFiles/test_3d_rendering.dir/rule
-
-# Convenience name for target.
-test_3d_rendering: CMakeFiles/test_3d_rendering.dir/rule
-.PHONY : test_3d_rendering
-
-# codegen rule for target.
-CMakeFiles/test_3d_rendering.dir/codegen:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\test_3d_rendering.dir\build.make CMakeFiles/test_3d_rendering.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles --progress-num=18,19,20,21 "Finished codegen for target test_3d_rendering"
-.PHONY : CMakeFiles/test_3d_rendering.dir/codegen
-
-# clean rule for target.
-CMakeFiles/test_3d_rendering.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\test_3d_rendering.dir\build.make CMakeFiles/test_3d_rendering.dir/clean
-.PHONY : CMakeFiles/test_3d_rendering.dir/clean
 
 #=============================================================================
 # Target rules for target tests/CMakeFiles/physics_test.dir

@@ -94,7 +94,7 @@ CMakeFiles/BlackHoleSimulation.dir/src/InputSystem.cpp.obj: \
  c:\mingw\lib\gcc\mingw32\6.3.0\include\c++\bits\stl_vector.h \
  c:\mingw\lib\gcc\mingw32\6.3.0\include\c++\bits\stl_bvector.h \
  c:\mingw\lib\gcc\mingw32\6.3.0\include\c++\bits\vector.tcc \
- C:/Omniverse/Projects/blackhole-sim/glfw-3.3.10.bin.WIN32/include/GLFW/glfw3.h \
+ C:/Omniverse/Projects/blackhole-sim/glfw-3.4.bin.WIN64/include/GLFW/glfw3.h \
  c:\mingw\include\gl\gl.h \
  c:\mingw\lib\gcc\mingw32\6.3.0\include\c++\iostream \
  c:\mingw\lib\gcc\mingw32\6.3.0\include\c++\ostream \

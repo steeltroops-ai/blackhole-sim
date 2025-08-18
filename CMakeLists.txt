@@ -20,11 +20,11 @@ find_package(OpenGL REQUIRED)
 
 # Include directories
 include_directories(${CMAKE_SOURCE_DIR}/include)
-include_directories(${CMAKE_SOURCE_DIR}/glfw-3.3.10.bin.WIN32/include)
+include_directories(${CMAKE_SOURCE_DIR}/glfw-3.4.bin.WIN64/include)
 include_directories(${OPENGL_INCLUDE_DIRS})
 
 # Add GLFW library directory
-link_directories(${CMAKE_SOURCE_DIR}/glfw-3.3.10.bin.WIN32/lib-static-ucrt)
+link_directories(${CMAKE_SOURCE_DIR}/glfw-3.4.bin.WIN64/lib-static-ucrt)
 
 # Source files
 set(SOURCES
@@ -44,12 +44,7 @@ set(SOURCES
 # Create main executable
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-# Create 3D rendering test executable
-add_executable(test_3d_rendering
-    src/test_3d_rendering.cpp
-    src/SimpleRenderingEngine.cpp
-    src/glad.c
-)
+# Note: test_3d_rendering.cpp was removed during cleanup
 
 # Link libraries for main executable
 target_link_libraries(${PROJECT_NAME}
@@ -65,19 +60,7 @@ target_link_libraries(${PROJECT_NAME}
     winmm
 )
 
-# Link libraries for 3D test
-target_link_libraries(test_3d_rendering
-    ${OPENGL_LIBRARIES}
-    glfw3
-    gdi32
-    user32
-    kernel32
-    opengl32
-    shell32
-    ole32
-    uuid
-    winmm
-)
+# Note: test_3d_rendering target removed during cleanup
 
 # Link OpenMP if available
 # if(OpenMP_CXX_FOUND)

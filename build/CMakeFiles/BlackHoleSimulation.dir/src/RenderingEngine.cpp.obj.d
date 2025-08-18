@@ -15,7 +15,7 @@ CMakeFiles/BlackHoleSimulation.dir/src/RenderingEngine.cpp.obj: \
  c:\mingw\include\winnls.h c:\mingw\include\winver.h \
  c:\mingw\include\winnetwk.h c:\mingw\include\winreg.h \
  c:\mingw\include\winsvc.h \
- C:/Omniverse/Projects/blackhole-sim/glfw-3.3.10.bin.WIN32/include/GLFW/glfw3.h \
+ C:/Omniverse/Projects/blackhole-sim/glfw-3.4.bin.WIN64/include/GLFW/glfw3.h \
  c:\mingw\lib\gcc\mingw32\6.3.0\include\stdint.h \
  c:\mingw\include\stdint.h \
  C:/Omniverse/Projects/blackhole-sim/include/RenderingEngine.hpp \

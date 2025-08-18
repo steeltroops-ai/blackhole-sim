@@ -1,5 +1,5 @@
 ---
-type: "always_apply"
+type: "manual"
 ---
 
 # Master AI Agent Rulebook

@@ -184,19 +184,6 @@ BlackHoleSimulation/fast:
 .PHONY : BlackHoleSimulation/fast
 
 #=============================================================================
-# Target rules for targets named test_3d_rendering
-
-# Build rule for target.
-test_3d_rendering: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 test_3d_rendering
-.PHONY : test_3d_rendering
-
-# fast build rule for target.
-test_3d_rendering/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\test_3d_rendering.dir\build.make CMakeFiles/test_3d_rendering.dir/build
-.PHONY : test_3d_rendering/fast
-
-#=============================================================================
 # Target rules for targets named physics_test
 
 # Build rule for target.
@@ -409,7 +396,6 @@ src/SimpleRenderingEngine.obj: src/SimpleRenderingEngine.cpp.obj
 # target to build an object file
 src/SimpleRenderingEngine.cpp.obj:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\BlackHoleSimulation.dir\build.make CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.obj
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\test_3d_rendering.dir\build.make CMakeFiles/test_3d_rendering.dir/src/SimpleRenderingEngine.cpp.obj
 .PHONY : src/SimpleRenderingEngine.cpp.obj
 
 src/SimpleRenderingEngine.i: src/SimpleRenderingEngine.cpp.i
@@ -418,7 +404,6 @@ src/SimpleRenderingEngine.i: src/SimpleRenderingEngine.cpp.i
 # target to preprocess a source file
 src/SimpleRenderingEngine.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\BlackHoleSimulation.dir\build.make CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\test_3d_rendering.dir\build.make CMakeFiles/test_3d_rendering.dir/src/SimpleRenderingEngine.cpp.i
 .PHONY : src/SimpleRenderingEngine.cpp.i
 
 src/SimpleRenderingEngine.s: src/SimpleRenderingEngine.cpp.s
@@ -427,7 +412,6 @@ src/SimpleRenderingEngine.s: src/SimpleRenderingEngine.cpp.s
 # target to generate assembly for a file
 src/SimpleRenderingEngine.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\BlackHoleSimulation.dir\build.make CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\test_3d_rendering.dir\build.make CMakeFiles/test_3d_rendering.dir/src/SimpleRenderingEngine.cpp.s
 .PHONY : src/SimpleRenderingEngine.cpp.s
 
 src/SimulationManager.obj: src/SimulationManager.cpp.obj
@@ -460,7 +444,6 @@ src/glad.obj: src/glad.c.obj
 # target to build an object file
 src/glad.c.obj:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\BlackHoleSimulation.dir\build.make CMakeFiles/BlackHoleSimulation.dir/src/glad.c.obj
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\test_3d_rendering.dir\build.make CMakeFiles/test_3d_rendering.dir/src/glad.c.obj
 .PHONY : src/glad.c.obj
 
 src/glad.i: src/glad.c.i
@@ -469,7 +452,6 @@ src/glad.i: src/glad.c.i
 # target to preprocess a source file
 src/glad.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\BlackHoleSimulation.dir\build.make CMakeFiles/BlackHoleSimulation.dir/src/glad.c.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\test_3d_rendering.dir\build.make CMakeFiles/test_3d_rendering.dir/src/glad.c.i
 .PHONY : src/glad.c.i
 
 src/glad.s: src/glad.c.s
@@ -478,7 +460,6 @@ src/glad.s: src/glad.c.s
 # target to generate assembly for a file
 src/glad.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\BlackHoleSimulation.dir\build.make CMakeFiles/BlackHoleSimulation.dir/src/glad.c.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\test_3d_rendering.dir\build.make CMakeFiles/test_3d_rendering.dir/src/glad.c.s
 .PHONY : src/glad.c.s
 
 src/main.obj: src/main.cpp.obj
@@ -505,30 +486,6 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\BlackHoleSimulation.dir\build.make CMakeFiles/BlackHoleSimulation.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
-src/test_3d_rendering.obj: src/test_3d_rendering.cpp.obj
-.PHONY : src/test_3d_rendering.obj
-
-# target to build an object file
-src/test_3d_rendering.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\test_3d_rendering.dir\build.make CMakeFiles/test_3d_rendering.dir/src/test_3d_rendering.cpp.obj
-.PHONY : src/test_3d_rendering.cpp.obj
-
-src/test_3d_rendering.i: src/test_3d_rendering.cpp.i
-.PHONY : src/test_3d_rendering.i
-
-# target to preprocess a source file
-src/test_3d_rendering.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\test_3d_rendering.dir\build.make CMakeFiles/test_3d_rendering.dir/src/test_3d_rendering.cpp.i
-.PHONY : src/test_3d_rendering.cpp.i
-
-src/test_3d_rendering.s: src/test_3d_rendering.cpp.s
-.PHONY : src/test_3d_rendering.s
-
-# target to generate assembly for a file
-src/test_3d_rendering.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\test_3d_rendering.dir\build.make CMakeFiles/test_3d_rendering.dir/src/test_3d_rendering.cpp.s
-.PHONY : src/test_3d_rendering.cpp.s
-
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -546,7 +503,6 @@ help:
 	@echo ... BlackHoleSimulation
 	@echo ... minimal_test
 	@echo ... physics_test
-	@echo ... test_3d_rendering
 	@echo ... src/AccretionDisk.obj
 	@echo ... src/AccretionDisk.i
 	@echo ... src/AccretionDisk.s
@@ -580,9 +536,6 @@ help:
 	@echo ... src/main.obj
 	@echo ... src/main.i
 	@echo ... src/main.s
-	@echo ... src/test_3d_rendering.obj
-	@echo ... src/test_3d_rendering.i
-	@echo ... src/test_3d_rendering.s
 .PHONY : help
 
 
