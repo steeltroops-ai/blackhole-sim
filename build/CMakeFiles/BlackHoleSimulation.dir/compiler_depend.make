@@ -1073,6 +1073,7 @@ CMakeFiles/BlackHoleSimulation.dir/src/SimulationManager.cpp.obj: C:/Omniverse/P
   C:/Omniverse/Projects/blackhole-sim/include/Particle.hpp \
   C:/Omniverse/Projects/blackhole-sim/include/PhysicsEngine.hpp \
   C:/Omniverse/Projects/blackhole-sim/include/RenderingEngine.hpp \
+  C:/Omniverse/Projects/blackhole-sim/include/SimpleRenderer.h \
   C:/Omniverse/Projects/blackhole-sim/include/SimulationManager.hpp \
   C:/Omniverse/Projects/blackhole-sim/include/Vector3.hpp \
   C:/Omniverse/Projects/blackhole-sim/include/Vector4.hpp \
@@ -1774,6 +1775,8 @@ c:/mingw/lib/gcc/mingw32/6.3.0/include/c++/ext/atomicity.h:
 c:/mingw/include/string.h:
 
 c:/mingw/lib/gcc/mingw32/6.3.0/include/c++/ext/concurrence.h:
+
+C:/Omniverse/Projects/blackhole-sim/include/SimpleRenderer.h:
 
 c:/mingw/lib/gcc/mingw32/6.3.0/include/c++/ext/new_allocator.h:
 

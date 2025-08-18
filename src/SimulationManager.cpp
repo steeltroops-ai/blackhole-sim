@@ -127,14 +127,20 @@ bool SimulationManager::InitializeSubsystems() {
     }
 
     std::cout << "    3D Rendering Engine initialized successfully\n";
-    
-    // Configure rendering settings
-    // VSync and MSAA methods are now available in RenderingEngine
-    
+
     // Initialize Input System
     std::cout << "  Initializing Input System...\n";
     m_inputSystem.reset(new InputSystem());
-    if (!m_inputSystem->Initialize(m_renderingEngine->GetWindow())) {
+
+    // Get the GLFW window from the simple renderer
+    GLFWwindow* window = getSimpleRendererWindow();
+
+    if (!window) {
+        std::cerr << "    Failed to get GLFW window from renderer\n";
+        return false;
+    }
+
+    if (!m_inputSystem->Initialize(window)) {
         std::cerr << "    Failed to initialize Input System\n";
         return false;
     }
@@ -171,12 +177,14 @@ void SimulationManager::SetupDefaultScene() {
     // Add some light rays for lensing demonstration
     AddTestLightRays();
     
-    // Set initial camera position
-    auto& camera = m_renderingEngine->GetCamera();
-    double radius = 50.0 * m_blackHole->GetSchwarzschildRadius();
-    camera.position = {0.0f, 0.0f, static_cast<float>(radius)};
-    camera.target = {0.0f, 0.0f, 0.0f};
-    camera.up = {0.0f, 1.0f, 0.0f};
+    // Set initial camera position (skip for simple renderer)
+    if (m_renderingEngine) {
+        auto& camera = m_renderingEngine->GetCamera();
+        double radius = 50.0 * m_blackHole->GetSchwarzschildRadius();
+        camera.position = {0.0f, 0.0f, static_cast<float>(radius)};
+        camera.target = {0.0f, 0.0f, 0.0f};
+        camera.up = {0.0f, 1.0f, 0.0f};
+    }
 }
 
 void SimulationManager::AddTestParticles() {
@@ -306,35 +314,51 @@ void SimulationManager::HandleInputAction(InputSystem::Action action, float valu
             break;
             
         case InputSystem::Action::TOGGLE_GRID:
-            m_renderingEngine->ToggleRenderLayer(RenderingEngine::RenderLayer::SPACETIME_GRID);
+            if (m_renderingEngine) {
+                m_renderingEngine->ToggleRenderLayer(RenderingEngine::RenderLayer::SPACETIME_GRID);
+            }
             break;
-            
+
         case InputSystem::Action::TOGGLE_PARTICLES:
-            m_renderingEngine->ToggleRenderLayer(RenderingEngine::RenderLayer::PARTICLES);
+            if (m_renderingEngine) {
+                m_renderingEngine->ToggleRenderLayer(RenderingEngine::RenderLayer::PARTICLES);
+            }
             break;
             
         case InputSystem::Action::TOGGLE_TRAILS:
-            m_renderingEngine->ToggleRenderLayer(RenderingEngine::RenderLayer::PARTICLE_TRAILS);
+            if (m_renderingEngine) {
+                m_renderingEngine->ToggleRenderLayer(RenderingEngine::RenderLayer::PARTICLE_TRAILS);
+            }
             break;
-            
+
         case InputSystem::Action::TOGGLE_LIGHT_RAYS:
-            m_renderingEngine->ToggleRenderLayer(RenderingEngine::RenderLayer::LIGHT_RAYS);
+            if (m_renderingEngine) {
+                m_renderingEngine->ToggleRenderLayer(RenderingEngine::RenderLayer::LIGHT_RAYS);
+            }
             break;
-            
+
         case InputSystem::Action::TOGGLE_ACCRETION_DISK:
-            m_renderingEngine->ToggleRenderLayer(RenderingEngine::RenderLayer::ACCRETION_DISK);
+            if (m_renderingEngine) {
+                m_renderingEngine->ToggleRenderLayer(RenderingEngine::RenderLayer::ACCRETION_DISK);
+            }
             break;
-            
+
         case InputSystem::Action::TOGGLE_BLACK_HOLE:
-            m_renderingEngine->ToggleRenderLayer(RenderingEngine::RenderLayer::BLACK_HOLE);
+            if (m_renderingEngine) {
+                m_renderingEngine->ToggleRenderLayer(RenderingEngine::RenderLayer::BLACK_HOLE);
+            }
             break;
-            
+
         case InputSystem::Action::TOGGLE_PHOTON_SPHERE:
-            m_renderingEngine->ToggleRenderLayer(RenderingEngine::RenderLayer::PHOTON_SPHERE);
+            if (m_renderingEngine) {
+                m_renderingEngine->ToggleRenderLayer(RenderingEngine::RenderLayer::PHOTON_SPHERE);
+            }
             break;
-            
+
         case InputSystem::Action::TOGGLE_UI:
-            m_renderingEngine->ToggleRenderLayer(RenderingEngine::RenderLayer::UI_OVERLAY);
+            if (m_renderingEngine) {
+                m_renderingEngine->ToggleRenderLayer(RenderingEngine::RenderLayer::UI_OVERLAY);
+            }
             break;
             
         case InputSystem::Action::TOGGLE_FULLSCREEN:
@@ -367,36 +391,75 @@ int SimulationManager::Run() {
         std::cerr << "Error: SimulationManager not initialized\n";
         return -1;
     }
-    
+
     m_isRunning = true;
-    
+
     std::cout << "Starting simulation loop...\n";
-    
-    // Main simulation loop
-    while (m_isRunning && !shouldCloseWindow()) {
-        // Update timing
-        UpdateTiming();
-        
-        // Process input
-        m_inputSystem->Update(m_deltaTime);
-        
-        // Update physics (if not paused)
-        if (!m_isPaused) {
-            UpdatePhysics();
+
+    try {
+        int frameCount = 0;
+        // Main simulation loop
+        while (m_isRunning && !shouldCloseWindow()) {
+            frameCount++;
+
+            // Debug output every 60 frames
+            if (frameCount % 60 == 0) {
+                std::cout << "Frame " << frameCount << " - Loop running normally\n";
+            }
+
+            // Update timing
+            UpdateTiming();
+
+            // Process input (skip if causing issues)
+            try {
+                if (m_inputSystem) {
+                    m_inputSystem->Update(m_deltaTime);
+                }
+            } catch (...) {
+                std::cout << "Input system error, continuing...\n";
+            }
+
+            // Update physics (if not paused)
+            if (!m_isPaused) {
+                try {
+                    UpdatePhysics();
+                } catch (...) {
+                    std::cout << "Physics update error, continuing...\n";
+                }
+            }
+
+            // Render frame
+            try {
+                Render();
+            } catch (...) {
+                std::cout << "Render error, continuing...\n";
+            }
+
+            // Update performance statistics
+            try {
+                UpdatePerformanceStats();
+            } catch (...) {
+                std::cout << "Performance stats error, continuing...\n";
+            }
+
+            // Limit frame rate if needed
+            try {
+                LimitFrameRate();
+            } catch (...) {
+                std::cout << "Frame rate limit error, continuing...\n";
+            }
         }
-        
-        // Render frame
-        Render();
-        
-        // Update performance statistics
-        UpdatePerformanceStats();
-        
-        // Limit frame rate if needed
-        LimitFrameRate();
+
+        std::cout << "Simulation loop ended normally after " << frameCount << " frames\n";
+        return 0;
+
+    } catch (const std::exception& e) {
+        std::cerr << "Exception in simulation loop: " << e.what() << "\n";
+        return -1;
+    } catch (...) {
+        std::cerr << "Unknown exception in simulation loop\n";
+        return -1;
     }
-    
-    std::cout << "Simulation loop ended\n";
-    return 0;
 }
 
 void SimulationManager::UpdateTiming() {

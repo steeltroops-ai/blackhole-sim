@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Black Hole Simulation - WSL Build Script
-# This script compiles the entire project using g++ in WSL
+# Black Hole Simulation - Cross-Platform Build Script
+# This script builds the project using CMake for better cross-platform support
 
 set -e  # Exit on any error
 
@@ -16,81 +16,72 @@ echo -e "${BLUE}Black Hole Simulation Build Script${NC}"
 echo -e "${BLUE}===================================${NC}"
 
 # Configuration
-CXX="g++"
-CXXFLAGS="-std=c++17 -Wall -Wextra -O2 -g"
-INCLUDE_DIR="include"
-SRC_DIR="src"
 BUILD_DIR="build"
-TARGET="blackhole-sim"
+BUILD_TYPE="Release"
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --debug)
+            BUILD_TYPE="Debug"
+            shift
+            ;;
+        --clean)
+            echo -e "${YELLOW}Cleaning build directory...${NC}"
+            rm -rf "$BUILD_DIR"
+            shift
+            ;;
+        --help)
+            echo "Usage: $0 [OPTIONS]"
+            echo "Options:"
+            echo "  --debug    Build in debug mode"
+            echo "  --clean    Clean build directory first"
+            echo "  --help     Show this help message"
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Use --help for usage information"
+            exit 1
+            ;;
+    esac
+done
+
+# Check for CMake
+if ! command -v cmake &> /dev/null; then
+    echo -e "${RED}Error: CMake not found. Please install CMake.${NC}"
+    exit 1
+fi
 
 # Create build directory
 echo -e "${YELLOW}Creating build directory...${NC}"
 mkdir -p "$BUILD_DIR"
 
-# Source files to compile
-SOURCE_FILES=(
-    "$SRC_DIR/main.cpp"
-    "$SRC_DIR/AccretionDisk.cpp"
-    "$SRC_DIR/BlackHole.cpp"
-    "$SRC_DIR/InputSystem.cpp"
-    "$SRC_DIR/LightRay.cpp"
-    "$SRC_DIR/Particle.cpp"
-    "$SRC_DIR/PhysicsEngine.cpp"
-    "$SRC_DIR/RenderingEngine.cpp"
-    "$SRC_DIR/SimulationManager.cpp"
-    "$SRC_DIR/glad.c"
-)
-
-# Check if all source files exist
-echo -e "${YELLOW}Checking source files...${NC}"
-for file in "${SOURCE_FILES[@]}"; do
-    if [ ! -f "$file" ]; then
-        echo -e "${RED}Error: Source file $file not found!${NC}"
-        exit 1
-    fi
-    echo -e "${GREEN}✓${NC} Found: $file"
-done
-
-# Check if include directory exists
-if [ ! -d "$INCLUDE_DIR" ]; then
-    echo -e "${RED}Error: Include directory $INCLUDE_DIR not found!${NC}"
-    exit 1
-fi
-
-# Compile each source file to object file
-echo -e "${YELLOW}Compiling source files...${NC}"
-OBJECT_FILES=()
-for src_file in "${SOURCE_FILES[@]}"; do
-    # Get filename without path and extension
-    filename=$(basename "$src_file" .cpp)
-    obj_file="$BUILD_DIR/$filename.o"
-    
-    echo -e "${BLUE}Compiling $src_file...${NC}"
-    if $CXX $CXXFLAGS -I"$INCLUDE_DIR" -c "$src_file" -o "$obj_file"; then
-        echo -e "${GREEN}✓${NC} Compiled: $obj_file"
-        OBJECT_FILES+=("$obj_file")
-    else
-        echo -e "${RED}✗${NC} Failed to compile: $src_file"
-        exit 1
-    fi
-done
-
-# Link object files into executable
-echo -e "${YELLOW}Linking executable...${NC}"
-if $CXX $CXXFLAGS "${OBJECT_FILES[@]}" -o "$BUILD_DIR/$TARGET"; then
-    echo -e "${GREEN}✓${NC} Successfully created executable: $BUILD_DIR/$TARGET"
+# Configure with CMake
+echo -e "${YELLOW}Configuring with CMake...${NC}"
+if cmake -S . -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; then
+    echo -e "${GREEN}✓${NC} CMake configuration successful"
 else
-    echo -e "${RED}✗${NC} Failed to link executable"
+    echo -e "${RED}✗${NC} CMake configuration failed"
     exit 1
 fi
 
-# Check if executable was created and is executable
-if [ -x "$BUILD_DIR/$TARGET" ]; then
+# Build with CMake
+echo -e "${YELLOW}Building with CMake...${NC}"
+if cmake --build "$BUILD_DIR" --config "$BUILD_TYPE"; then
+    echo -e "${GREEN}✓${NC} Build successful"
+else
+    echo -e "${RED}✗${NC} Build failed"
+    exit 1
+fi
+
+# Check if executable was created
+if [ -f "$BUILD_DIR/BlackHoleSimulation" ] || [ -f "$BUILD_DIR/BlackHoleSimulation.exe" ]; then
     echo -e "${GREEN}Build completed successfully!${NC}"
-    echo -e "${BLUE}Executable location: $BUILD_DIR/$TARGET${NC}"
-    echo -e "${BLUE}To run: ./$BUILD_DIR/$TARGET${NC}"
+    echo -e "${BLUE}Executable location: $BUILD_DIR/BlackHoleSimulation${NC}"
+    echo -e "${BLUE}To run: cd $BUILD_DIR && ./BlackHoleSimulation${NC}"
 else
-    echo -e "${RED}Error: Executable was not created or is not executable${NC}"
+    echo -e "${RED}Error: Executable was not created${NC}"
     exit 1
 fi
 

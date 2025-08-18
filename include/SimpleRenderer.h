@@ -1,6 +1,9 @@
 #ifndef SIMPLE_RENDERER_H
 #define SIMPLE_RENDERER_H
 
+// Forward declaration for GLFW
+struct GLFWwindow;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -13,6 +16,9 @@ void renderSimpleBlackHole();
 
 // Check if the window should close
 bool shouldCloseWindow();
+
+// Get the GLFW window handle
+GLFWwindow* getSimpleRendererWindow();
 
 // Cleanup the renderer
 void cleanupSimpleRenderer();

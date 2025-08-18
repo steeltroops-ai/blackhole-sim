@@ -22,9 +22,9 @@ if not exist "build" (
 )
 
 REM Check if executable exists
-if not exist "build\test_3d_rendering.exe" (
-    echo ERROR: 3D rendering executable not found!
-    echo Please build the project first using: cmake --build build --config Release
+if not exist "build\BlackHoleSimulation.exe" (
+    echo ERROR: BlackHoleSimulation.exe not found!
+    echo Please build the project first using: build_windows.bat
     echo.
     pause
     exit /b 1

@@ -1082,6 +1082,7 @@ CMakeFiles/BlackHoleSimulation.dir/src/SimulationManager.cpp.obj
  C:/Omniverse/Projects/blackhole-sim/include/Particle.hpp
  C:/Omniverse/Projects/blackhole-sim/include/PhysicsEngine.hpp
  C:/Omniverse/Projects/blackhole-sim/include/RenderingEngine.hpp
+ C:/Omniverse/Projects/blackhole-sim/include/SimpleRenderer.h
  C:/Omniverse/Projects/blackhole-sim/include/SimulationManager.hpp
  C:/Omniverse/Projects/blackhole-sim/include/Vector3.hpp
  C:/Omniverse/Projects/blackhole-sim/include/Vector4.hpp
