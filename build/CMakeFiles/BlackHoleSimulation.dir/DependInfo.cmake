@@ -16,6 +16,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "C:/Omniverse/Projects/blackhole-sim/src/Particle.cpp" "CMakeFiles/BlackHoleSimulation.dir/src/Particle.cpp.obj" "gcc" "CMakeFiles/BlackHoleSimulation.dir/src/Particle.cpp.obj.d"
   "C:/Omniverse/Projects/blackhole-sim/src/PhysicsEngine.cpp" "CMakeFiles/BlackHoleSimulation.dir/src/PhysicsEngine.cpp.obj" "gcc" "CMakeFiles/BlackHoleSimulation.dir/src/PhysicsEngine.cpp.obj.d"
   "C:/Omniverse/Projects/blackhole-sim/src/RenderingEngine.cpp" "CMakeFiles/BlackHoleSimulation.dir/src/RenderingEngine.cpp.obj" "gcc" "CMakeFiles/BlackHoleSimulation.dir/src/RenderingEngine.cpp.obj.d"
+  "C:/Omniverse/Projects/blackhole-sim/src/SimpleRenderingEngine.cpp" "CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.obj" "gcc" "CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.obj.d"
   "C:/Omniverse/Projects/blackhole-sim/src/SimulationManager.cpp" "CMakeFiles/BlackHoleSimulation.dir/src/SimulationManager.cpp.obj" "gcc" "CMakeFiles/BlackHoleSimulation.dir/src/SimulationManager.cpp.obj.d"
   "C:/Omniverse/Projects/blackhole-sim/src/main.cpp" "CMakeFiles/BlackHoleSimulation.dir/src/main.cpp.obj" "gcc" "CMakeFiles/BlackHoleSimulation.dir/src/main.cpp.obj.d"
   )

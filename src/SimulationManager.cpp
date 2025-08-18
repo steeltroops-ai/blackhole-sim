@@ -11,6 +11,7 @@
 #include "Particle.hpp"
 #include "LightRay.hpp"
 #include "AccretionDisk.hpp"
+#include "SimpleRenderer.h"
 
 #include <iostream>
 #include <fstream>
@@ -117,14 +118,15 @@ bool SimulationManager::InitializeSubsystems() {
         return false;
     }
     
-    // Initialize Rendering Engine
-    std::cout << "  Initializing Rendering Engine...\n";
-    m_renderingEngine.reset(new RenderingEngine());
-    if (!m_renderingEngine->Initialize(m_config.windowWidth, m_config.windowHeight, 
-                                       "Black Hole Simulation")) {
-        std::cerr << "    Failed to initialize Rendering Engine\n";
+    // Initialize Rendering Engine (using simple 3D renderer)
+    std::cout << "  Initializing 3D Rendering Engine...\n";
+
+    if (!initializeSimpleRenderer()) {
+        std::cerr << "    Failed to initialize 3D Rendering Engine\n";
         return false;
     }
+
+    std::cout << "    3D Rendering Engine initialized successfully\n";
     
     // Configure rendering settings
     // VSync and MSAA methods are now available in RenderingEngine
@@ -371,7 +373,7 @@ int SimulationManager::Run() {
     std::cout << "Starting simulation loop...\n";
     
     // Main simulation loop
-    while (m_isRunning && !m_renderingEngine->ShouldClose()) {
+    while (m_isRunning && !shouldCloseWindow()) {
         // Update timing
         UpdateTiming();
         
@@ -434,34 +436,11 @@ void SimulationManager::UpdatePhysics() {
 }
 
 void SimulationManager::Render() {
-    if (!m_renderingEngine) return;
-    
-    // Begin frame
-    m_renderingEngine->BeginFrame();
-    
-    // Convert particle and light ray storage to unique_ptr vectors for rendering
-    // Create copies in unique_ptrs to match the rendering interface
-    std::vector<std::unique_ptr<Particle>> particlePtrs;
-    std::vector<std::unique_ptr<LightRay>> lightRayPtrs;
-    
-    for (const auto& particle : m_particles) {
-        particlePtrs.emplace_back(std::make_unique<Particle>(particle));
-    }
-    
-    for (const auto& lightRay : m_lightRays) {
-        lightRayPtrs.emplace_back(std::make_unique<LightRay>(lightRay));
-    }
-    
-    // Render all objects using the main render method
-    if (m_blackHole) {
-        m_renderingEngine->Render(*m_blackHole, particlePtrs, lightRayPtrs, m_accretionDisk.get());
-    }
-    
+    // Use simple renderer function for 3D visualization
+    renderSimpleBlackHole();
+
     // Render UI
     RenderUI();
-    
-    // End frame
-    m_renderingEngine->EndFrame();
 }
 
 void SimulationManager::RenderUI() {

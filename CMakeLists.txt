@@ -24,13 +24,14 @@ include_directories(${CMAKE_SOURCE_DIR}/glfw-3.3.10.bin.WIN32/include)
 include_directories(${OPENGL_INCLUDE_DIRS})
 
 # Add GLFW library directory
-link_directories(${CMAKE_SOURCE_DIR}/glfw-3.3.10.bin.WIN32/lib-mingw-w64)
+link_directories(${CMAKE_SOURCE_DIR}/glfw-3.3.10.bin.WIN32/lib-static-ucrt)
 
 # Source files
 set(SOURCES
     src/main.cpp
     src/PhysicsEngine.cpp
     src/RenderingEngine.cpp
+    src/SimpleRenderingEngine.cpp
     src/InputSystem.cpp
     src/SimulationManager.cpp
     src/BlackHole.cpp
@@ -40,13 +41,34 @@ set(SOURCES
     src/glad.c
 )
 
-# Create executable
+# Create main executable
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-# Link libraries
-target_link_libraries(${PROJECT_NAME} 
+# Create 3D rendering test executable
+add_executable(test_3d_rendering
+    src/test_3d_rendering.cpp
+    src/SimpleRenderingEngine.cpp
+    src/glad.c
+)
+
+# Link libraries for main executable
+target_link_libraries(${PROJECT_NAME}
     ${OPENGL_LIBRARIES}
-    glfw3dll
+    glfw3
+    gdi32
+    user32
+    kernel32
+    opengl32
+    shell32
+    ole32
+    uuid
+    winmm
+)
+
+# Link libraries for 3D test
+target_link_libraries(test_3d_rendering
+    ${OPENGL_LIBRARIES}
+    glfw3
     gdi32
     user32
     kernel32

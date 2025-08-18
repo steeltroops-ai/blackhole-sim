@@ -16,6 +16,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/BlackHoleSimulation.dir/src/PhysicsEngine.cpp.obj.d"
   "CMakeFiles/BlackHoleSimulation.dir/src/RenderingEngine.cpp.obj"
   "CMakeFiles/BlackHoleSimulation.dir/src/RenderingEngine.cpp.obj.d"
+  "CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.obj"
+  "CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.obj.d"
   "CMakeFiles/BlackHoleSimulation.dir/src/SimulationManager.cpp.obj"
   "CMakeFiles/BlackHoleSimulation.dir/src/SimulationManager.cpp.obj.d"
   "CMakeFiles/BlackHoleSimulation.dir/src/glad.c.obj"

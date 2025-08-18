@@ -104,6 +104,21 @@ PFNGLPOINTSIZEPROC glad_glPointSize = NULL;
 PFNGLDELETEVERTEXARRAYSPROC glad_glDeleteVertexArrays = NULL;
 PFNGLDELETEBUFFERSPROC glad_glDeleteBuffers = NULL;
 PFNGLDELETEPROGRAMPROC glad_glDeleteProgram = NULL;
+PFNGLUNIFORM3FPROC glad_glUniform3f = NULL;
+PFNGLUNIFORM4FPROC glad_glUniform4f = NULL;
+PFNGLREADPIXELSPROC glad_glReadPixels = NULL;
+PFNGLLINEWIDTHPROC glad_glLineWidth = NULL;
+PFNGLPOLYGONMODEPROC glad_glPolygonMode = NULL;
+PFNGLGENFRAMEBUFFERSPROC glad_glGenFramebuffers = NULL;
+PFNGLBINDFRAMEBUFFERPROC glad_glBindFramebuffer = NULL;
+PFNGLFRAMEBUFFERTEXTURE2DPROC glad_glFramebufferTexture2D = NULL;
+PFNGLGENRENDERBUFFERSPROC glad_glGenRenderbuffers = NULL;
+PFNGLBINDRENDERBUFFERPROC glad_glBindRenderbuffer = NULL;
+PFNGLRENDERBUFFERSTORAGEPROC glad_glRenderbufferStorage = NULL;
+PFNGLFRAMEBUFFERRENDERBUFFERPROC glad_glFramebufferRenderbuffer = NULL;
+PFNGLCHECKFRAMEBUFFERSTATUSPROC glad_glCheckFramebufferStatus = NULL;
+PFNGLDELETEFRAMEBUFFERSPROC glad_glDeleteFramebuffers = NULL;
+PFNGLDELETERENDERBUFFERSPROC glad_glDeleteRenderbuffers = NULL;
 
 static void load_GL_VERSION_1_0(void) {
     glad_glClear = (PFNGLCLEARPROC)get_proc("glClear");
@@ -138,11 +153,16 @@ static void load_GL_VERSION_2_0(void) {
     glad_glUniformMatrix4fv = (PFNGLUNIFORMMATRIX4FVPROC)get_proc("glUniformMatrix4fv");
     glad_glUniform1f = (PFNGLUNIFORM1FPROC)get_proc("glUniform1f");
     glad_glUniform1i = (PFNGLUNIFORM1IPROC)get_proc("glUniform1i");
+    glad_glUniform3f = (PFNGLUNIFORM3FPROC)get_proc("glUniform3f");
+    glad_glUniform4f = (PFNGLUNIFORM4FPROC)get_proc("glUniform4f");
     glad_glDeleteShader = (PFNGLDELETESHADERPROC)get_proc("glDeleteShader");
     glad_glGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)get_proc("glGetShaderInfoLog");
     glad_glGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)get_proc("glGetProgramInfoLog");
     glad_glPointSize = (PFNGLPOINTSIZEPROC)get_proc("glPointSize");
     glad_glDeleteProgram = (PFNGLDELETEPROGRAMPROC)get_proc("glDeleteProgram");
+    glad_glReadPixels = (PFNGLREADPIXELSPROC)get_proc("glReadPixels");
+    glad_glLineWidth = (PFNGLLINEWIDTHPROC)get_proc("glLineWidth");
+    glad_glPolygonMode = (PFNGLPOLYGONMODEPROC)get_proc("glPolygonMode");
 }
 
 static void load_GL_VERSION_3_0(void) {
@@ -151,6 +171,19 @@ static void load_GL_VERSION_3_0(void) {
     glad_glEnableVertexAttribArray = (PFNGLENABLEVERTEXATTRIBARRAYPROC)get_proc("glEnableVertexAttribArray");
     glad_glVertexAttribPointer = (PFNGLVERTEXATTRIBPOINTERPROC)get_proc("glVertexAttribPointer");
     glad_glDeleteVertexArrays = (PFNGLDELETEVERTEXARRAYSPROC)get_proc("glDeleteVertexArrays");
+    glad_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)get_proc("glDeleteBuffers");
+
+    // Framebuffer functions
+    glad_glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)get_proc("glGenFramebuffers");
+    glad_glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)get_proc("glBindFramebuffer");
+    glad_glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)get_proc("glFramebufferTexture2D");
+    glad_glGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC)get_proc("glGenRenderbuffers");
+    glad_glBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC)get_proc("glBindRenderbuffer");
+    glad_glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC)get_proc("glRenderbufferStorage");
+    glad_glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)get_proc("glFramebufferRenderbuffer");
+    glad_glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)get_proc("glCheckFramebufferStatus");
+    glad_glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)get_proc("glDeleteFramebuffers");
+    glad_glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSPROC)get_proc("glDeleteRenderbuffers");
 }
 
 int gladLoadGL(void) {

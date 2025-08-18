@@ -1,4 +1,5 @@
 #include "glad.h"
+#include <GLFW/glfw3.h>
 #include "RenderingEngine.hpp"
 #include <iostream>
 #include <fstream>

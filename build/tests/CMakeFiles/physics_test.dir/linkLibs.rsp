@@ -1,1 +1,1 @@
-  -L"C:/Omniverse/Projects/blackhole-sim/glfw-3.3.10.bin.WIN32/lib-mingw-w64"  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 
+  -L"C:/Omniverse/Projects/blackhole-sim/glfw-3.3.10.bin.WIN32/lib-static-ucrt"  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 

@@ -1,5 +1,6 @@
 ---
-type: "manual"
+type: "agent_requested"
+description: "Example description"
 ---
 
 # Modern Futuristic Design System Guidelines

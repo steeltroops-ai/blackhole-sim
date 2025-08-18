@@ -116,11 +116,26 @@ CMakeFiles/BlackHoleSimulation.dir/src/RenderingEngine.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/BlackHoleSimulation.dir/src/RenderingEngine.cpp.s"
 	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Omniverse\Projects\blackhole-sim\src\RenderingEngine.cpp -o CMakeFiles\BlackHoleSimulation.dir\src\RenderingEngine.cpp.s
 
+CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.obj: CMakeFiles/BlackHoleSimulation.dir/flags.make
+CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.obj: CMakeFiles/BlackHoleSimulation.dir/includes_CXX.rsp
+CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.obj: C:/Omniverse/Projects/blackhole-sim/src/SimpleRenderingEngine.cpp
+CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.obj: CMakeFiles/BlackHoleSimulation.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.obj"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.obj -MF CMakeFiles\BlackHoleSimulation.dir\src\SimpleRenderingEngine.cpp.obj.d -o CMakeFiles\BlackHoleSimulation.dir\src\SimpleRenderingEngine.cpp.obj -c C:\Omniverse\Projects\blackhole-sim\src\SimpleRenderingEngine.cpp
+
+CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.i"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Omniverse\Projects\blackhole-sim\src\SimpleRenderingEngine.cpp > CMakeFiles\BlackHoleSimulation.dir\src\SimpleRenderingEngine.cpp.i
+
+CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.s"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Omniverse\Projects\blackhole-sim\src\SimpleRenderingEngine.cpp -o CMakeFiles\BlackHoleSimulation.dir\src\SimpleRenderingEngine.cpp.s
+
 CMakeFiles/BlackHoleSimulation.dir/src/InputSystem.cpp.obj: CMakeFiles/BlackHoleSimulation.dir/flags.make
 CMakeFiles/BlackHoleSimulation.dir/src/InputSystem.cpp.obj: CMakeFiles/BlackHoleSimulation.dir/includes_CXX.rsp
 CMakeFiles/BlackHoleSimulation.dir/src/InputSystem.cpp.obj: C:/Omniverse/Projects/blackhole-sim/src/InputSystem.cpp
 CMakeFiles/BlackHoleSimulation.dir/src/InputSystem.cpp.obj: CMakeFiles/BlackHoleSimulation.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/BlackHoleSimulation.dir/src/InputSystem.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/BlackHoleSimulation.dir/src/InputSystem.cpp.obj"
 	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/BlackHoleSimulation.dir/src/InputSystem.cpp.obj -MF CMakeFiles\BlackHoleSimulation.dir\src\InputSystem.cpp.obj.d -o CMakeFiles\BlackHoleSimulation.dir\src\InputSystem.cpp.obj -c C:\Omniverse\Projects\blackhole-sim\src\InputSystem.cpp
 
 CMakeFiles/BlackHoleSimulation.dir/src/InputSystem.cpp.i: cmake_force
@@ -135,7 +150,7 @@ CMakeFiles/BlackHoleSimulation.dir/src/SimulationManager.cpp.obj: CMakeFiles/Bla
 CMakeFiles/BlackHoleSimulation.dir/src/SimulationManager.cpp.obj: CMakeFiles/BlackHoleSimulation.dir/includes_CXX.rsp
 CMakeFiles/BlackHoleSimulation.dir/src/SimulationManager.cpp.obj: C:/Omniverse/Projects/blackhole-sim/src/SimulationManager.cpp
 CMakeFiles/BlackHoleSimulation.dir/src/SimulationManager.cpp.obj: CMakeFiles/BlackHoleSimulation.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/BlackHoleSimulation.dir/src/SimulationManager.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/BlackHoleSimulation.dir/src/SimulationManager.cpp.obj"
 	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/BlackHoleSimulation.dir/src/SimulationManager.cpp.obj -MF CMakeFiles\BlackHoleSimulation.dir\src\SimulationManager.cpp.obj.d -o CMakeFiles\BlackHoleSimulation.dir\src\SimulationManager.cpp.obj -c C:\Omniverse\Projects\blackhole-sim\src\SimulationManager.cpp
 
 CMakeFiles/BlackHoleSimulation.dir/src/SimulationManager.cpp.i: cmake_force
@@ -150,7 +165,7 @@ CMakeFiles/BlackHoleSimulation.dir/src/BlackHole.cpp.obj: CMakeFiles/BlackHoleSi
 CMakeFiles/BlackHoleSimulation.dir/src/BlackHole.cpp.obj: CMakeFiles/BlackHoleSimulation.dir/includes_CXX.rsp
 CMakeFiles/BlackHoleSimulation.dir/src/BlackHole.cpp.obj: C:/Omniverse/Projects/blackhole-sim/src/BlackHole.cpp
 CMakeFiles/BlackHoleSimulation.dir/src/BlackHole.cpp.obj: CMakeFiles/BlackHoleSimulation.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/BlackHoleSimulation.dir/src/BlackHole.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/BlackHoleSimulation.dir/src/BlackHole.cpp.obj"
 	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/BlackHoleSimulation.dir/src/BlackHole.cpp.obj -MF CMakeFiles\BlackHoleSimulation.dir\src\BlackHole.cpp.obj.d -o CMakeFiles\BlackHoleSimulation.dir\src\BlackHole.cpp.obj -c C:\Omniverse\Projects\blackhole-sim\src\BlackHole.cpp
 
 CMakeFiles/BlackHoleSimulation.dir/src/BlackHole.cpp.i: cmake_force
@@ -165,7 +180,7 @@ CMakeFiles/BlackHoleSimulation.dir/src/Particle.cpp.obj: CMakeFiles/BlackHoleSim
 CMakeFiles/BlackHoleSimulation.dir/src/Particle.cpp.obj: CMakeFiles/BlackHoleSimulation.dir/includes_CXX.rsp
 CMakeFiles/BlackHoleSimulation.dir/src/Particle.cpp.obj: C:/Omniverse/Projects/blackhole-sim/src/Particle.cpp
 CMakeFiles/BlackHoleSimulation.dir/src/Particle.cpp.obj: CMakeFiles/BlackHoleSimulation.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/BlackHoleSimulation.dir/src/Particle.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/BlackHoleSimulation.dir/src/Particle.cpp.obj"
 	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/BlackHoleSimulation.dir/src/Particle.cpp.obj -MF CMakeFiles\BlackHoleSimulation.dir\src\Particle.cpp.obj.d -o CMakeFiles\BlackHoleSimulation.dir\src\Particle.cpp.obj -c C:\Omniverse\Projects\blackhole-sim\src\Particle.cpp
 
 CMakeFiles/BlackHoleSimulation.dir/src/Particle.cpp.i: cmake_force
@@ -180,7 +195,7 @@ CMakeFiles/BlackHoleSimulation.dir/src/LightRay.cpp.obj: CMakeFiles/BlackHoleSim
 CMakeFiles/BlackHoleSimulation.dir/src/LightRay.cpp.obj: CMakeFiles/BlackHoleSimulation.dir/includes_CXX.rsp
 CMakeFiles/BlackHoleSimulation.dir/src/LightRay.cpp.obj: C:/Omniverse/Projects/blackhole-sim/src/LightRay.cpp
 CMakeFiles/BlackHoleSimulation.dir/src/LightRay.cpp.obj: CMakeFiles/BlackHoleSimulation.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/BlackHoleSimulation.dir/src/LightRay.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/BlackHoleSimulation.dir/src/LightRay.cpp.obj"
 	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/BlackHoleSimulation.dir/src/LightRay.cpp.obj -MF CMakeFiles\BlackHoleSimulation.dir\src\LightRay.cpp.obj.d -o CMakeFiles\BlackHoleSimulation.dir\src\LightRay.cpp.obj -c C:\Omniverse\Projects\blackhole-sim\src\LightRay.cpp
 
 CMakeFiles/BlackHoleSimulation.dir/src/LightRay.cpp.i: cmake_force
@@ -195,7 +210,7 @@ CMakeFiles/BlackHoleSimulation.dir/src/AccretionDisk.cpp.obj: CMakeFiles/BlackHo
 CMakeFiles/BlackHoleSimulation.dir/src/AccretionDisk.cpp.obj: CMakeFiles/BlackHoleSimulation.dir/includes_CXX.rsp
 CMakeFiles/BlackHoleSimulation.dir/src/AccretionDisk.cpp.obj: C:/Omniverse/Projects/blackhole-sim/src/AccretionDisk.cpp
 CMakeFiles/BlackHoleSimulation.dir/src/AccretionDisk.cpp.obj: CMakeFiles/BlackHoleSimulation.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/BlackHoleSimulation.dir/src/AccretionDisk.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/BlackHoleSimulation.dir/src/AccretionDisk.cpp.obj"
 	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/BlackHoleSimulation.dir/src/AccretionDisk.cpp.obj -MF CMakeFiles\BlackHoleSimulation.dir\src\AccretionDisk.cpp.obj.d -o CMakeFiles\BlackHoleSimulation.dir\src\AccretionDisk.cpp.obj -c C:\Omniverse\Projects\blackhole-sim\src\AccretionDisk.cpp
 
 CMakeFiles/BlackHoleSimulation.dir/src/AccretionDisk.cpp.i: cmake_force
@@ -210,7 +225,7 @@ CMakeFiles/BlackHoleSimulation.dir/src/glad.c.obj: CMakeFiles/BlackHoleSimulatio
 CMakeFiles/BlackHoleSimulation.dir/src/glad.c.obj: CMakeFiles/BlackHoleSimulation.dir/includes_C.rsp
 CMakeFiles/BlackHoleSimulation.dir/src/glad.c.obj: C:/Omniverse/Projects/blackhole-sim/src/glad.c
 CMakeFiles/BlackHoleSimulation.dir/src/glad.c.obj: CMakeFiles/BlackHoleSimulation.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object CMakeFiles/BlackHoleSimulation.dir/src/glad.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object CMakeFiles/BlackHoleSimulation.dir/src/glad.c.obj"
 	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/BlackHoleSimulation.dir/src/glad.c.obj -MF CMakeFiles\BlackHoleSimulation.dir\src\glad.c.obj.d -o CMakeFiles\BlackHoleSimulation.dir\src\glad.c.obj -c C:\Omniverse\Projects\blackhole-sim\src\glad.c
 
 CMakeFiles/BlackHoleSimulation.dir/src/glad.c.i: cmake_force
@@ -226,6 +241,7 @@ BlackHoleSimulation_OBJECTS = \
 "CMakeFiles/BlackHoleSimulation.dir/src/main.cpp.obj" \
 "CMakeFiles/BlackHoleSimulation.dir/src/PhysicsEngine.cpp.obj" \
 "CMakeFiles/BlackHoleSimulation.dir/src/RenderingEngine.cpp.obj" \
+"CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.obj" \
 "CMakeFiles/BlackHoleSimulation.dir/src/InputSystem.cpp.obj" \
 "CMakeFiles/BlackHoleSimulation.dir/src/SimulationManager.cpp.obj" \
 "CMakeFiles/BlackHoleSimulation.dir/src/BlackHole.cpp.obj" \
@@ -240,6 +256,7 @@ BlackHoleSimulation_EXTERNAL_OBJECTS =
 BlackHoleSimulation.exe: CMakeFiles/BlackHoleSimulation.dir/src/main.cpp.obj
 BlackHoleSimulation.exe: CMakeFiles/BlackHoleSimulation.dir/src/PhysicsEngine.cpp.obj
 BlackHoleSimulation.exe: CMakeFiles/BlackHoleSimulation.dir/src/RenderingEngine.cpp.obj
+BlackHoleSimulation.exe: CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.obj
 BlackHoleSimulation.exe: CMakeFiles/BlackHoleSimulation.dir/src/InputSystem.cpp.obj
 BlackHoleSimulation.exe: CMakeFiles/BlackHoleSimulation.dir/src/SimulationManager.cpp.obj
 BlackHoleSimulation.exe: CMakeFiles/BlackHoleSimulation.dir/src/BlackHole.cpp.obj
@@ -251,7 +268,7 @@ BlackHoleSimulation.exe: CMakeFiles/BlackHoleSimulation.dir/build.make
 BlackHoleSimulation.exe: CMakeFiles/BlackHoleSimulation.dir/linkLibs.rsp
 BlackHoleSimulation.exe: CMakeFiles/BlackHoleSimulation.dir/objects1.rsp
 BlackHoleSimulation.exe: CMakeFiles/BlackHoleSimulation.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable BlackHoleSimulation.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Omniverse\Projects\blackhole-sim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX executable BlackHoleSimulation.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\BlackHoleSimulation.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

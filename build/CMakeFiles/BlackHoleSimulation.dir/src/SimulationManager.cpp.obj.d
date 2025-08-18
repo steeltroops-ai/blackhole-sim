@@ -173,6 +173,7 @@ CMakeFiles/BlackHoleSimulation.dir/src/SimulationManager.cpp.obj: \
  c:\mingw\lib\gcc\mingw32\6.3.0\include\c++\ratio \
  c:\mingw\lib\gcc\mingw32\6.3.0\include\c++\ctime c:\mingw\include\time.h \
  c:\mingw\lib\gcc\mingw32\6.3.0\include\c++\bits\parse_numbers.h \
+ C:/Omniverse/Projects/blackhole-sim/include/SimpleRenderer.h \
  c:\mingw\lib\gcc\mingw32\6.3.0\include\c++\iostream \
  c:\mingw\lib\gcc\mingw32\6.3.0\include\c++\fstream \
  c:\mingw\lib\gcc\mingw32\6.3.0\include\c++\bits\codecvt.h \
