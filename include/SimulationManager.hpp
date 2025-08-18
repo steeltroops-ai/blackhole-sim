@@ -153,6 +153,10 @@ public:
     void UpdateTiming();
     void SetupInputCallbacks();
     void HandleInputAction(InputSystem::Action action, float value);
+    void HandleCameraMovement(InputSystem::Action action, float value);
+    void HandleCameraRotation(double deltaX, double deltaY);
+    void HandleCameraZoom(double yOffset);
+    void ToggleCameraMode();
     void AddTestParticles();
     void AddTestLightRays();
 

@@ -49,6 +49,7 @@
 #define GL_POLYGON_MODE                   0x0B40
 #define GL_CULL_FACE                      0x0B44
 #define GL_DEPTH_TEST                     0x0B71
+#define GL_SHADING_LANGUAGE_VERSION       0x8B8C
 #define GL_BLEND                          0x0BE2
 #define GL_TEXTURE_2D                     0x0DE1
 #define GL_UNSIGNED_BYTE                  0x1401
@@ -112,6 +113,8 @@ typedef void (APIENTRYP PFNGLPOINTSIZEPROC) (GLfloat size);
 typedef void (APIENTRYP PFNGLDELETEVERTEXARRAYSPROC) (GLsizei n, const GLuint *arrays);
 typedef void (APIENTRYP PFNGLDELETEBUFFERSPROC) (GLsizei n, const GLuint *buffers);
 typedef void (APIENTRYP PFNGLDELETEPROGRAMPROC) (GLuint program);
+typedef void (APIENTRYP PFNGLBLENDFUNCPROC) (GLenum sfactor, GLenum dfactor);
+typedef const GLubyte* (APIENTRYP PFNGLGETSTRINGPROC) (GLenum name);
 
 GLAPI PFNGLCLEARPROC glad_glClear;
 GLAPI PFNGLCLEARCOLORPROC glad_glClearColor;
@@ -147,6 +150,8 @@ GLAPI PFNGLDELETEPROGRAMPROC glad_glDeleteProgram;
 GLAPI PFNGLUNIFORMMATRIX4FVPROC glad_glUniformMatrix4fv;
 GLAPI PFNGLUNIFORM1FPROC glad_glUniform1f;
 GLAPI PFNGLUNIFORM1IPROC glad_glUniform1i;
+GLAPI PFNGLBLENDFUNCPROC glad_glBlendFunc;
+GLAPI PFNGLGETSTRINGPROC glad_glGetString;
 
 #define glClear glad_glClear
 #define glClearColor glad_glClearColor
@@ -182,6 +187,8 @@ GLAPI PFNGLUNIFORM1IPROC glad_glUniform1i;
 #define glDeleteVertexArrays glad_glDeleteVertexArrays
 #define glDeleteBuffers glad_glDeleteBuffers
 #define glDeleteProgram glad_glDeleteProgram
+#define glBlendFunc glad_glBlendFunc
+#define glGetString glad_glGetString
 
 int gladLoadGL(void);
 

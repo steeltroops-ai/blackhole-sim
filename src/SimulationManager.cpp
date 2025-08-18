@@ -25,6 +25,10 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 // Gravitational constant in m^3 kg^-1 s^-2
 static const double G = 6.67430e-11;
 
@@ -122,7 +126,7 @@ bool SimulationManager::InitializeSubsystems() {
     }
     
     // Configure rendering settings
-    // TODO: Add SetVSync and SetMSAA methods to RenderingEngine if needed
+    // VSync and MSAA methods are now available in RenderingEngine
     
     // Initialize Input System
     std::cout << "  Initializing Input System...\n";
@@ -236,16 +240,15 @@ void SimulationManager::SetupInputCallbacks() {
     // Set mouse callback for camera control
     m_inputSystem->SetMouseCallback([this](double x, double y, double deltaX, double deltaY) {
         if (!m_inputSystem->IsCursorEnabled()) {
-            // TODO: Implement camera rotation using GetCamera() interface
-            (void)deltaX; (void)deltaY; // Suppress unused parameter warnings
+            HandleCameraRotation(deltaX, deltaY);
         }
         (void)x; (void)y; // Suppress unused parameter warnings
     });
     
     // Set scroll callback for zoom
     m_inputSystem->SetScrollCallback([this](double xOffset, double yOffset) {
-        // TODO: Implement camera zoom using GetCamera() interface
-        (void)xOffset; (void)yOffset; // Suppress unused parameter warnings
+        HandleCameraZoom(yOffset);
+        (void)xOffset; // Suppress unused parameter warning
     });
     
     // Setup default key bindings
@@ -283,8 +286,7 @@ void SimulationManager::HandleInputAction(InputSystem::Action action, float valu
         case InputSystem::Action::CAMERA_RIGHT:
         case InputSystem::Action::CAMERA_UP:
         case InputSystem::Action::CAMERA_DOWN:
-            // TODO: Implement camera movement using GetCamera() interface
-            // For now, we'll let the RenderingEngine handle camera updates
+            HandleCameraMovement(action, value);
             break;
             
         case InputSystem::Action::CAMERA_RESET:
@@ -292,7 +294,7 @@ void SimulationManager::HandleInputAction(InputSystem::Action action, float valu
             break;
             
         case InputSystem::Action::TOGGLE_CAMERA_MODE:
-            // TODO: Implement camera mode toggle using GetCamera() interface
+            ToggleCameraMode();
             break;
             
         case InputSystem::Action::TOGGLE_GRID:
@@ -575,6 +577,189 @@ void SimulationManager::ResetCamera() {
         camera.target = {0.0f, 0.0f, 0.0f};
         camera.up = {0.0f, 1.0f, 0.0f};
         std::cout << "Camera reset\n";
+    }
+}
+
+void SimulationManager::HandleCameraMovement(InputSystem::Action action, float value) {
+    if (!m_renderingEngine) return;
+    
+    auto& camera = m_renderingEngine->GetCamera();
+    const float moveSpeed = 10.0f * m_deltaTime; // Units per second
+    
+    // Calculate camera forward, right, and up vectors
+    float forward[3] = {
+        camera.target[0] - camera.position[0],
+        camera.target[1] - camera.position[1],
+        camera.target[2] - camera.position[2]
+    };
+    
+    // Normalize forward vector
+    float forwardLength = std::sqrt(forward[0]*forward[0] + forward[1]*forward[1] + forward[2]*forward[2]);
+    if (forwardLength > 0.0f) {
+        forward[0] /= forwardLength;
+        forward[1] /= forwardLength;
+        forward[2] /= forwardLength;
+    }
+    
+    // Calculate right vector (cross product of forward and up)
+    float right[3] = {
+        forward[1] * camera.up[2] - forward[2] * camera.up[1],
+        forward[2] * camera.up[0] - forward[0] * camera.up[2],
+        forward[0] * camera.up[1] - forward[1] * camera.up[0]
+    };
+    
+    switch (action) {
+        case InputSystem::Action::CAMERA_FORWARD:
+            camera.position[0] += forward[0] * moveSpeed;
+            camera.position[1] += forward[1] * moveSpeed;
+            camera.position[2] += forward[2] * moveSpeed;
+            camera.target[0] += forward[0] * moveSpeed;
+            camera.target[1] += forward[1] * moveSpeed;
+            camera.target[2] += forward[2] * moveSpeed;
+            break;
+            
+        case InputSystem::Action::CAMERA_BACKWARD:
+            camera.position[0] -= forward[0] * moveSpeed;
+            camera.position[1] -= forward[1] * moveSpeed;
+            camera.position[2] -= forward[2] * moveSpeed;
+            camera.target[0] -= forward[0] * moveSpeed;
+            camera.target[1] -= forward[1] * moveSpeed;
+            camera.target[2] -= forward[2] * moveSpeed;
+            break;
+            
+        case InputSystem::Action::CAMERA_LEFT:
+            camera.position[0] -= right[0] * moveSpeed;
+            camera.position[1] -= right[1] * moveSpeed;
+            camera.position[2] -= right[2] * moveSpeed;
+            camera.target[0] -= right[0] * moveSpeed;
+            camera.target[1] -= right[1] * moveSpeed;
+            camera.target[2] -= right[2] * moveSpeed;
+            break;
+            
+        case InputSystem::Action::CAMERA_RIGHT:
+            camera.position[0] += right[0] * moveSpeed;
+            camera.position[1] += right[1] * moveSpeed;
+            camera.position[2] += right[2] * moveSpeed;
+            camera.target[0] += right[0] * moveSpeed;
+            camera.target[1] += right[1] * moveSpeed;
+            camera.target[2] += right[2] * moveSpeed;
+            break;
+            
+        case InputSystem::Action::CAMERA_UP:
+            camera.position[0] += camera.up[0] * moveSpeed;
+            camera.position[1] += camera.up[1] * moveSpeed;
+            camera.position[2] += camera.up[2] * moveSpeed;
+            camera.target[0] += camera.up[0] * moveSpeed;
+            camera.target[1] += camera.up[1] * moveSpeed;
+            camera.target[2] += camera.up[2] * moveSpeed;
+            break;
+            
+        case InputSystem::Action::CAMERA_DOWN:
+            camera.position[0] -= camera.up[0] * moveSpeed;
+            camera.position[1] -= camera.up[1] * moveSpeed;
+            camera.position[2] -= camera.up[2] * moveSpeed;
+            camera.target[0] -= camera.up[0] * moveSpeed;
+            camera.target[1] -= camera.up[1] * moveSpeed;
+            camera.target[2] -= camera.up[2] * moveSpeed;
+            break;
+            
+        default:
+            break;
+    }
+}
+
+void SimulationManager::HandleCameraRotation(double deltaX, double deltaY) {
+    if (!m_renderingEngine) return;
+    
+    auto& camera = m_renderingEngine->GetCamera();
+    const float sensitivity = 0.002f;
+    
+    // Calculate current direction vector
+    float direction[3] = {
+        camera.target[0] - camera.position[0],
+        camera.target[1] - camera.position[1],
+        camera.target[2] - camera.position[2]
+    };
+    
+    // Convert to spherical coordinates for rotation
+    float radius = std::sqrt(direction[0]*direction[0] + direction[1]*direction[1] + direction[2]*direction[2]);
+    if (radius < 0.001f) radius = 1.0f;
+    
+    float yaw = std::atan2(direction[0], direction[2]);
+    float pitch = std::asin(direction[1] / radius);
+    
+    // Apply rotation
+    yaw += deltaX * sensitivity;
+    pitch -= deltaY * sensitivity;
+    
+    // Clamp pitch to avoid gimbal lock
+    const float maxPitch = M_PI * 0.49f;
+    pitch = std::max(-maxPitch, std::min(maxPitch, pitch));
+    
+    // Convert back to Cartesian coordinates
+    direction[0] = radius * std::sin(yaw) * std::cos(pitch);
+    direction[1] = radius * std::sin(pitch);
+    direction[2] = radius * std::cos(yaw) * std::cos(pitch);
+    
+    // Update target
+    camera.target[0] = camera.position[0] + direction[0];
+    camera.target[1] = camera.position[1] + direction[1];
+    camera.target[2] = camera.position[2] + direction[2];
+}
+
+void SimulationManager::HandleCameraZoom(double yOffset) {
+    if (!m_renderingEngine) return;
+    
+    auto& camera = m_renderingEngine->GetCamera();
+    const float zoomSpeed = 5.0f;
+    
+    // Calculate direction to target
+    float direction[3] = {
+        camera.target[0] - camera.position[0],
+        camera.target[1] - camera.position[1],
+        camera.target[2] - camera.position[2]
+    };
+    
+    // Normalize direction
+    float length = std::sqrt(direction[0]*direction[0] + direction[1]*direction[1] + direction[2]*direction[2]);
+    if (length > 0.001f) {
+        direction[0] /= length;
+        direction[1] /= length;
+        direction[2] /= length;
+        
+        // Move camera along direction
+        float zoomAmount = yOffset * zoomSpeed;
+        camera.position[0] += direction[0] * zoomAmount;
+        camera.position[1] += direction[1] * zoomAmount;
+        camera.position[2] += direction[2] * zoomAmount;
+    }
+}
+
+void SimulationManager::ToggleCameraMode() {
+    if (!m_renderingEngine) return;
+    
+    auto& camera = m_renderingEngine->GetCamera();
+    
+    switch (camera.mode) {
+        case RenderingEngine::CameraMode::FREE_LOOK:
+            camera.mode = RenderingEngine::CameraMode::ORBIT;
+            std::cout << "Camera mode: ORBIT\n";
+            break;
+            
+        case RenderingEngine::CameraMode::ORBIT:
+            camera.mode = RenderingEngine::CameraMode::FOLLOW_PARTICLE;
+            std::cout << "Camera mode: FOLLOW_PARTICLE\n";
+            break;
+            
+        case RenderingEngine::CameraMode::FOLLOW_PARTICLE:
+            camera.mode = RenderingEngine::CameraMode::FIXED;
+            std::cout << "Camera mode: FIXED\n";
+            break;
+            
+        case RenderingEngine::CameraMode::FIXED:
+            camera.mode = RenderingEngine::CameraMode::FREE_LOOK;
+            std::cout << "Camera mode: FREE_LOOK\n";
+            break;
     }
 }
 

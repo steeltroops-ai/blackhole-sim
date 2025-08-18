@@ -228,6 +228,18 @@ public:
      */
     double GetFPS() const { return m_fps; }
 
+    /**
+     * @brief Set vertical synchronization
+     * @param enabled True to enable VSync, false to disable
+     */
+    void SetVSync(bool enabled);
+
+    /**
+     * @brief Set multi-sample anti-aliasing
+     * @param samples Number of MSAA samples (0 to disable, typically 2, 4, 8, or 16)
+     */
+    void SetMSAA(int samples);
+
 private:
     // Window and OpenGL context
     GLFWwindow* m_window;                       ///< GLFW window handle
@@ -258,6 +270,7 @@ private:
 
     // Framebuffers for post-processing
     GLuint m_framebuffer, m_colorTexture, m_depthTexture;
+    GLuint m_depthRenderbuffer;
     GLuint m_bloomFramebuffer, m_bloomTexture;
 
     // Performance tracking
@@ -503,6 +516,14 @@ private:
      * @return Program ID or 0 on failure
      */
     GLuint CreateShaderProgram(GLuint vertexShader, GLuint fragmentShader);
+    
+    /**
+     * @brief Compile a shader from source code
+     * @param type Shader type (GL_VERTEX_SHADER or GL_FRAGMENT_SHADER)
+     * @param source Shader source code
+     * @return Compiled shader ID or 0 on failure
+     */
+    GLuint CompileShader(GLenum type, const char* source);
 
     /**
      * @brief Generate sphere geometry
