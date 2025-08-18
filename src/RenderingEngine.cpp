@@ -129,7 +129,8 @@ void main()
 
 RenderingEngine::RenderingEngine() 
     : m_initialized(false), m_shaderProgram(0),
-      m_VAO(0), m_VBO(0), m_EBO(0), m_windowWidth(1200), m_windowHeight(800) {
+      m_VAO(0), m_VBO(0), m_EBO(0), m_windowWidth(1200), m_windowHeight(800),
+      m_renderLayers(RenderLayer::ALL) {  // Initialize all render layers enabled
 #ifdef _WIN32
     m_hwnd = nullptr;
     m_hdc = nullptr;
@@ -149,7 +150,7 @@ RenderingEngine::RenderingEngine()
     m_camera.up = {0.0f, 1.0f, 0.0f};
     m_camera.fov = 45.0f;
     m_camera.nearPlane = 0.1f;
-    m_camera.farPlane = 10000.0f;
+    m_camera.farPlane = 1000000.0f;  // Increased for astronomical scales
     m_camera.mode = CameraMode::FREE_LOOK;
     m_camera.followParticleIndex = -1;
     
@@ -167,6 +168,14 @@ RenderingEngine::RenderingEngine()
     m_fieldOfView = m_camera.fov;
     m_nearPlane = m_camera.nearPlane;
     m_farPlane = m_camera.farPlane;
+    
+    // Initialize background color to black for space
+    m_backgroundColor = {0.0f, 0.0f, 0.0f, 1.0f};
+    
+    // Initialize performance tracking
+    m_fps = 0.0;
+    m_frameTimeAccumulator = 0.0;
+    m_frameCount = 0;
 }
 
 RenderingEngine::~RenderingEngine() {
@@ -416,14 +425,6 @@ void RenderingEngine::SetNearFarPlanes(float nearPlane, float farPlane) {
     UpdateProjectionMatrix();
 }
 
-Camera& RenderingEngine::GetCamera() {
-    return m_camera;
-}
-
-const Camera& RenderingEngine::GetCamera() const {
-    return m_camera;
-}
-
 void RenderingEngine::RenderSphere(float x, float y, float z, float radius, float r, float g, float b, float alpha) {
     if (!m_initialized) return;
     
@@ -459,9 +460,9 @@ void RenderingEngine::RenderLine(float x1, float y1, float z1, float x2, float y
     if (!m_initialized) return;
     
     std::vector<float> vertices = {
-        // Position, Color, TexCoord
-        x1, y1, z1, r, g, b, 0.0f, 0.0f,
-        x2, y2, z2, r, g, b, 1.0f, 1.0f
+        // Position, Color (matching vertex attribute setup)
+        x1, y1, z1, r, g, b,
+        x2, y2, z2, r, g, b
     };
     
     std::vector<unsigned int> indices = {0, 1};
@@ -474,7 +475,7 @@ void RenderingEngine::RenderLine(float x1, float y1, float z1, float x2, float y
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_DYNAMIC_DRAW);
     
     SetFloat("alpha", alpha);
-    SetBool("useTexture", false);
+    SetBool("useVertexColor", true);
     
     glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_INT, 0);
 }
@@ -485,8 +486,8 @@ void RenderingEngine::RenderPoint(float x, float y, float z, float size, float r
     glPointSize(size);
     
     std::vector<float> vertices = {
-        // Position, Color, TexCoord
-        x, y, z, r, g, b, 0.0f, 0.0f
+        // Position, Color (matching vertex attribute setup)
+        x, y, z, r, g, b
     };
     
     std::vector<unsigned int> indices = {0};
@@ -499,7 +500,7 @@ void RenderingEngine::RenderPoint(float x, float y, float z, float size, float r
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_DYNAMIC_DRAW);
     
     SetFloat("alpha", alpha);
-    SetBool("useTexture", false);
+    SetBool("useVertexColor", true);
     
     glDrawElements(GL_POINTS, indices.size(), GL_UNSIGNED_INT, 0);
 }
@@ -676,7 +677,7 @@ void RenderingEngine::RenderGeometry(const std::vector<float>& vertices, const s
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_DYNAMIC_DRAW);
     
     SetFloat("alpha", alpha);
-    SetBool("useTexture", false);
+    SetBool("useVertexColor", true);
     
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
@@ -1341,6 +1342,35 @@ LRESULT CALLBACK RenderingEngine::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam
         default:
             return DefWindowProc(hwnd, uMsg, wParam, lParam);
     }
+}
+
+GLuint RenderingEngine::CreateShaderProgram(GLuint vertexShader, GLuint fragmentShader) {
+    // Create shader program
+    GLuint program = glCreateProgram();
+    if (program == 0) {
+        std::cerr << "Failed to create shader program" << std::endl;
+        return 0;
+    }
+    
+    // Attach shaders
+    glAttachShader(program, vertexShader);
+    glAttachShader(program, fragmentShader);
+    
+    // Link program
+    glLinkProgram(program);
+    
+    // Check for linking errors
+    GLint success;
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    if (!success) {
+        GLchar infoLog[512];
+        glGetProgramInfoLog(program, 512, nullptr, infoLog);
+        std::cerr << "Shader program linking failed: " << infoLog << std::endl;
+        glDeleteProgram(program);
+        return 0;
+    }
+    
+    return program;
 }
 
 void RenderingEngine::HandleWindowMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {

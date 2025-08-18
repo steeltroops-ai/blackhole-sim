@@ -74,6 +74,7 @@ public:
         bool enableMotionBlur = false;      ///< Enable motion blur
         float particleSize = 2.0f;          ///< Base particle size
         float lineWidth = 1.0f;             ///< Base line width
+        int msaaSamples = 4;                ///< MSAA sample count
     };
 
     /**
@@ -85,7 +86,7 @@ public:
         std::array<float, 3> up = {0.0f, 1.0f, 0.0f};          ///< Up vector
         float fov = 45.0f;                                      ///< Field of view (degrees)
         float nearPlane = 0.1f;                                 ///< Near clipping plane
-        float farPlane = 10000.0f;                              ///< Far clipping plane
+        float farPlane = 1000000.0f;                           ///< Far clipping plane (increased for astronomical scales)
         CameraMode mode = CameraMode::FREE_LOOK;                ///< Camera control mode
         int followParticleIndex = -1;                           ///< Index of particle to follow
     };

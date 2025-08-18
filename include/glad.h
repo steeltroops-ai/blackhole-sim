@@ -190,6 +190,14 @@ GLAPI PFNGLGETSTRINGPROC glad_glGetString;
 #define glBlendFunc glad_glBlendFunc
 #define glGetString glad_glGetString
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int gladLoadGL(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\physics_test.dir/objects.a
+C:\MinGW\bin\ar.exe qc CMakeFiles\physics_test.dir/objects.a @CMakeFiles\physics_test.dir\objects1.rsp
+C:\MinGW\bin\c++.exe -O3 -DNDEBUG -Wl,--whole-archive CMakeFiles\physics_test.dir/objects.a -Wl,--no-whole-archive -o physics_test.exe -Wl,--out-implib,libphysics_test.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\physics_test.dir\linkLibs.rsp

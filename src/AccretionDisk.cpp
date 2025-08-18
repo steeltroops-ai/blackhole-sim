@@ -542,4 +542,37 @@ void AccretionDisk::Reset() {
     m_isActive = false;
 }
 
+std::array<float, 4> AccretionDisk::GetDiskColor(double radius) const {
+    // Calculate temperature at this radius
+    double temp = CalculateTemperature(radius, 1.0); // Using unit mass for relative calculation
+    
+    // Convert temperature to color using blackbody radiation
+    // Typical accretion disk temperatures range from ~1000K to ~100000K
+    
+    std::array<float, 4> color = {1.0f, 1.0f, 1.0f, 1.0f}; // Default white
+    
+    if (temp <= 0.0) {
+        // No emission
+        color = {0.0f, 0.0f, 0.0f, 0.0f};
+    } else if (temp < 3000.0) {
+        // Cool - reddish
+        float intensity = static_cast<float>(temp / 3000.0);
+        color = {intensity * 0.8f, intensity * 0.2f, 0.0f, intensity};
+    } else if (temp < 6000.0) {
+        // Warm - orange to yellow
+        float t = static_cast<float>((temp - 3000.0) / 3000.0);
+        color = {0.8f + 0.2f * t, 0.2f + 0.6f * t, 0.1f * t, 0.8f + 0.2f * t};
+    } else if (temp < 10000.0) {
+        // Hot - white to blue-white
+        float t = static_cast<float>((temp - 6000.0) / 4000.0);
+        color = {1.0f, 1.0f, 0.5f + 0.5f * t, 1.0f};
+    } else {
+        // Very hot - blue-white
+        float intensity = std::min(1.0f, static_cast<float>(temp / 50000.0));
+        color = {0.7f * intensity, 0.8f * intensity, 1.0f * intensity, intensity};
+    }
+    
+    return color;
+}
+
 } // namespace BlackHoleSim

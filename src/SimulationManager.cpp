@@ -111,7 +111,8 @@ bool SimulationManager::InitializeSubsystems() {
     // Initialize Physics Engine
     std::cout << "  Initializing Physics Engine...\n";
     m_physicsEngine.reset(new PhysicsEngine());
-    if (!m_physicsEngine->Initialize(std::shared_ptr<BlackHole>(m_blackHole.get(), [](BlackHole*){}))) {
+    // Initialize without black hole for now - will be set later in SetupDefaultScene
+    if (!m_physicsEngine->Initialize(nullptr)) {
         std::cerr << "    Failed to initialize Physics Engine\n";
         return false;
     }
@@ -147,6 +148,11 @@ void SimulationManager::SetupDefaultScene() {
     // Create black hole (1 solar mass at origin)
     const double solarMass = 1.989e30; // kg
     m_blackHole.reset(new BlackHole(solarMass, {0.0, 0.0, 0.0}));
+    
+    // Now initialize physics engine with the black hole
+    if (m_physicsEngine && m_blackHole) {
+        m_physicsEngine->Initialize(std::shared_ptr<BlackHole>(m_blackHole.get(), [](BlackHole*){}));
+    }
     
     // Create accretion disk
     double innerRadius = 3.0 * m_blackHole->GetSchwarzschildRadius();
@@ -433,14 +439,22 @@ void SimulationManager::Render() {
     // Begin frame
     m_renderingEngine->BeginFrame();
     
-    // TODO: Convert particle and light ray storage to unique_ptr vectors
-    // For now, create empty vectors to satisfy the interface
-    std::vector<std::unique_ptr<Particle>> emptyParticles;
-    std::vector<std::unique_ptr<LightRay>> emptyLightRays;
+    // Convert particle and light ray storage to unique_ptr vectors for rendering
+    // Create copies in unique_ptrs to match the rendering interface
+    std::vector<std::unique_ptr<Particle>> particlePtrs;
+    std::vector<std::unique_ptr<LightRay>> lightRayPtrs;
+    
+    for (const auto& particle : m_particles) {
+        particlePtrs.emplace_back(std::make_unique<Particle>(particle));
+    }
+    
+    for (const auto& lightRay : m_lightRays) {
+        lightRayPtrs.emplace_back(std::make_unique<LightRay>(lightRay));
+    }
     
     // Render all objects using the main render method
     if (m_blackHole) {
-        m_renderingEngine->Render(*m_blackHole, emptyParticles, emptyLightRays, m_accretionDisk.get());
+        m_renderingEngine->Render(*m_blackHole, particlePtrs, lightRayPtrs, m_accretionDisk.get());
     }
     
     // Render UI

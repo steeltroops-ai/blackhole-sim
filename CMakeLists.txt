@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
-project(BlackHoleSimulation VERSION 1.0.0 LANGUAGES CXX)
+project(BlackHoleSimulation VERSION 1.0.0 LANGUAGES C CXX)
 
 # Set C++ standard
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -20,7 +20,11 @@ find_package(OpenGL REQUIRED)
 
 # Include directories
 include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_SOURCE_DIR}/glfw-3.3.10.bin.WIN32/include)
 include_directories(${OPENGL_INCLUDE_DIRS})
+
+# Add GLFW library directory
+link_directories(${CMAKE_SOURCE_DIR}/glfw-3.3.10.bin.WIN32/lib-mingw-w64)
 
 # Source files
 set(SOURCES
@@ -42,10 +46,15 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 # Link libraries
 target_link_libraries(${PROJECT_NAME} 
     ${OPENGL_LIBRARIES}
+    glfw3dll
     gdi32
     user32
     kernel32
     opengl32
+    shell32
+    ole32
+    uuid
+    winmm
 )
 
 # Link OpenMP if available

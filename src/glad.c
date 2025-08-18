@@ -98,6 +98,8 @@ PFNGLUNIFORM1IPROC glad_glUniform1i = NULL;
 PFNGLDELETESHADERPROC glad_glDeleteShader = NULL;
 PFNGLGETSHADERINFOLOGPROC glad_glGetShaderInfoLog = NULL;
 PFNGLGETPROGRAMINFOLOGPROC glad_glGetProgramInfoLog = NULL;
+PFNGLBLENDFUNCPROC glad_glBlendFunc = NULL;
+PFNGLGETSTRINGPROC glad_glGetString = NULL;
 PFNGLPOINTSIZEPROC glad_glPointSize = NULL;
 PFNGLDELETEVERTEXARRAYSPROC glad_glDeleteVertexArrays = NULL;
 PFNGLDELETEBUFFERSPROC glad_glDeleteBuffers = NULL;
@@ -111,6 +113,8 @@ static void load_GL_VERSION_1_0(void) {
     glad_glViewport = (PFNGLVIEWPORTPROC)get_proc("glViewport");
     glad_glDrawArrays = (PFNGLDRAWARRAYSPROC)get_proc("glDrawArrays");
     glad_glDrawElements = (PFNGLDRAWELEMENTSPROC)get_proc("glDrawElements");
+    glad_glBlendFunc = (PFNGLBLENDFUNCPROC)get_proc("glBlendFunc");
+    glad_glGetString = (PFNGLGETSTRINGPROC)get_proc("glGetString");
 }
 
 static void load_GL_VERSION_1_5(void) {

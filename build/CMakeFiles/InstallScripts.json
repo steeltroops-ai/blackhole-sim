@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/Omniverse/Projects/blackhole-sim/build/cmake_install.cmake",
+		"C:/Omniverse/Projects/blackhole-sim/build/tests/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

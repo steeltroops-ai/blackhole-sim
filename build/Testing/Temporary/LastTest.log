@@ -1,0 +1,49 @@
+Start testing: Aug 18 12:56 India Standard Time
+----------------------------------------------------------
+1/2 Testing: PhysicsTests
+1/2 Test: PhysicsTests
+Command: "C:/Omniverse/Projects/blackhole-sim/build/tests/physics_test.exe"
+Directory: C:/Omniverse/Projects/blackhole-sim/build
+"PhysicsTests" start time: Aug 18 12:56 India Standard Time
+Output:
+----------------------------------------------------------
+=== BlackHole Physics Test Suite ===
+Testing BlackHole creation...
+✓ BlackHole creation test passed
+Testing Schwarzschild metric components...
+✓ Schwarzschild metric test passed
+Testing gravitational redshift...
+✓ Gravitational redshift test passed
+Testing physical constants and calculations...
+✓ Physical constants test passed
+
+=== Test Summary ===
+Tests passed: 4/4
+🎉 All tests passed!
+<end of output>
+Test time =   0.43 sec
+----------------------------------------------------------
+Test Passed.
+"PhysicsTests" end time: Aug 18 12:56 India Standard Time
+"PhysicsTests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/2 Testing: MinimalTest
+2/2 Test: MinimalTest
+Command: "C:/Omniverse/Projects/blackhole-sim/build/tests/minimal_test.exe"
+Directory: C:/Omniverse/Projects/blackhole-sim/build
+"MinimalTest" start time: Aug 18 12:56 India Standard Time
+Output:
+----------------------------------------------------------
+Testing basic C++ compilation...
+sin(pi/2) = 1
+✓ Math test passed!
+<end of output>
+Test time =   0.46 sec
+----------------------------------------------------------
+Test Passed.
+"MinimalTest" end time: Aug 18 12:56 India Standard Time
+"MinimalTest" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Aug 18 12:56 India Standard Time

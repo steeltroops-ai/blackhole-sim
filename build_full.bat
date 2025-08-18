@@ -4,7 +4,7 @@ echo Building BlackHole Simulation Project (Full Version)...
 set MINGW_PATH=C:\MinGW\bin
 set COMPILER=%MINGW_PATH%\mingw32-g++.exe
 set FLAGS=-std=c++17 -Wall -Wextra -O2
-set INCLUDE_DIR=-I.\include -I.\glfw-3.4.bin.WIN64\include -I.\glad\include
+set INCLUDE_DIR=-I.\include -I.\glfw-3.4.bin.WIN64\include
 set SRC_DIR=.\src
 set TEST_DIR=.\tests
 set BUILD_DIR=.\build
@@ -111,7 +111,7 @@ if %ERRORLEVEL% neq 0 (
 )
 
 echo Compiling GLAD...
-%COMPILER% %FLAGS% %INCLUDE_DIR% -c .\glad\src\glad.c -o %BUILD_DIR%\glad.o
+%COMPILER% %FLAGS% %INCLUDE_DIR% -c %SRC_DIR%\glad.c -o %BUILD_DIR%\glad.o
 if %ERRORLEVEL% neq 0 (
     echo ERROR: Failed to compile GLAD
     exit /b 1

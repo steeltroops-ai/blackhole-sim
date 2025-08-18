@@ -5,6 +5,9 @@
 
 namespace BlackHoleSim {
 
+// Static instance pointer definition
+InputSystem* InputSystem::s_instance = nullptr;
+
 InputSystem::InputSystem() : m_window(nullptr), m_initialized(false) {
     // Initialize key and mouse states
     m_keyStates.clear();
@@ -333,6 +336,53 @@ std::array<bool, 3> InputSystem::GetModifierStates() const {
     }
     
     return modStates;
+}
+
+bool InputSystem::IsMouseButtonPressed(MouseButton button) const {
+    if (!m_window) return false;
+    
+    int glfwButton;
+    switch (button) {
+        case MouseButton::LEFT:
+            glfwButton = GLFW_MOUSE_BUTTON_LEFT;
+            break;
+        case MouseButton::RIGHT:
+            glfwButton = GLFW_MOUSE_BUTTON_RIGHT;
+            break;
+        case MouseButton::MIDDLE:
+            glfwButton = GLFW_MOUSE_BUTTON_MIDDLE;
+            break;
+        default:
+            return false;
+    }
+    
+    return glfwGetMouseButton(m_window, glfwButton) == GLFW_PRESS;
+}
+
+void InputSystem::ResetToDefaults() {
+    // Clear existing bindings
+    m_keyBindings.clear();
+    m_mouseBindings.clear();
+    
+    // Reset key states
+    m_keyStates.clear();
+    m_previousKeyStates.clear();
+    
+    // Set default key bindings
+    BindKey(GLFW_KEY_SPACE, Action::TOGGLE_PAUSE);
+    BindKey(GLFW_KEY_R, Action::RESET_SIMULATION);
+    BindKey(GLFW_KEY_S, Action::STEP_SIMULATION);
+    BindKey(GLFW_KEY_ESCAPE, Action::EXIT_APPLICATION);
+    BindKey(GLFW_KEY_W, Action::CAMERA_FORWARD);
+    BindKey(GLFW_KEY_S, Action::CAMERA_BACKWARD);
+    BindKey(GLFW_KEY_A, Action::CAMERA_LEFT);
+    BindKey(GLFW_KEY_D, Action::CAMERA_RIGHT);
+    BindKey(GLFW_KEY_Q, Action::CAMERA_UP);
+    BindKey(GLFW_KEY_E, Action::CAMERA_DOWN);
+    
+    // Set default mouse bindings
+    BindMouseButton(MouseButton::LEFT, Action::SPAWN_PARTICLE);
+    BindMouseButton(MouseButton::RIGHT, Action::SPAWN_LIGHT_RAY);
 }
 
 } // namespace BlackHoleSim

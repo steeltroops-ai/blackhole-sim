@@ -29,7 +29,8 @@ PhysicsEngine::PhysicsEngine()
 
 bool PhysicsEngine::Initialize(std::shared_ptr<BlackHole> blackHole) {
     m_blackHole = blackHole;
-    return m_blackHole != nullptr;
+    // Allow initialization without black hole - it can be set later
+    return true;
 }
 
 void PhysicsEngine::Update(double deltaTime, 
