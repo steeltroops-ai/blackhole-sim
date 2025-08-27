@@ -1,5 +1,5 @@
 #include "glad.h"
-#include "glfw_replacement.h"
+#include <GLFW/glfw3.h>
 #include "RenderingEngine.hpp"
 #include <iostream>
 #include <cmath>

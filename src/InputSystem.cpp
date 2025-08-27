@@ -1,5 +1,5 @@
 #include "InputSystem.hpp"
-#include "glfw_replacement.h"
+#include <GLFW/glfw3.h>
 #include <iostream>
 #include <algorithm>
 

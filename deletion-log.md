@@ -4,24 +4,25 @@
 
 **Date:** 2025-08-27  
 **Branch:** cleanup/remove-build-artifacts  
-**Original HEAD:** 7c85f5c  
+**Original HEAD:** 7c85f5c
 
 ### Files Removed
 
-| Path | Size | Reason | Risk Level | Git Commit |
-|------|------|--------|------------|------------|
-| build/ (entire directory) | ~5MB | Build artifacts should not be in version control | LOW | TBD |
-| build/CMakeCache.txt | ~50KB | CMake cache file - regenerated on build | LOW | TBD |
-| build/CMakeFiles/ | ~2MB | CMake generated files - regenerated on build | LOW | TBD |
-| build/Makefile | ~10KB | Generated makefile - regenerated on build | LOW | TBD |
-| build/glfw3.dll | ~500KB | Binary library - should be downloaded/built locally | LOW | TBD |
-| build/tests/ | ~1MB | Test build artifacts - regenerated on build | LOW | TBD |
+| Path                      | Size   | Reason                                              | Risk Level | Git Commit |
+| ------------------------- | ------ | --------------------------------------------------- | ---------- | ---------- |
+| build/ (entire directory) | ~5MB   | Build artifacts should not be in version control    | LOW        | TBD        |
+| build/CMakeCache.txt      | ~50KB  | CMake cache file - regenerated on build             | LOW        | TBD        |
+| build/CMakeFiles/         | ~2MB   | CMake generated files - regenerated on build        | LOW        | TBD        |
+| build/Makefile            | ~10KB  | Generated makefile - regenerated on build           | LOW        | TBD        |
+| build/glfw3.dll           | ~500KB | Binary library - should be downloaded/built locally | LOW        | TBD        |
+| build/tests/              | ~1MB   | Test build artifacts - regenerated on build         | LOW        | TBD        |
 
 ### Rationale
 
 1. **Build Directory**: The entire `build/` directory contains generated files that should never be committed to version control. These files are:
+
    - Platform-specific
-   - Compiler-specific  
+   - Compiler-specific
    - Regenerated on every build
    - Cause merge conflicts
    - Bloat repository size
@@ -38,6 +39,44 @@
 
 ### Next Steps
 
-1. Update .gitignore to prevent future commits of build artifacts
+1. Update .gitignore to prevent future commits of build artifacts ✅
 2. Remove duplicate GLFW installations
 3. Clean up redundant build scripts
+
+## Phase 2: GLFW Duplication Cleanup
+
+**Date:** 2025-08-27
+**Branch:** cleanup/remove-duplicate-glfw
+
+### Analysis
+
+The project has **4 different GLFW implementations** causing conflicts:
+
+1. **glfw-3.4.bin.WIN64/** (~15MB) - Official binary distribution with extensive documentation
+2. **glfw_mingw/** (~50KB) - Minimal headers only
+3. **glfw_replacement.h** - Custom Windows API replacement
+4. **WindowsOpenGL.cpp** - Direct Windows API implementation
+
+### Conflicts Identified
+
+- `RenderingEngine.cpp` includes `<GLFW/glfw3.h>` (real GLFW)
+- `SimpleRenderingEngine.cpp` includes `"glfw_replacement.h"` (custom replacement)
+- `InputSystem.cpp` includes `"glfw_replacement.h"` (custom replacement)
+- Typedef conflicts: `GLFWwindow` defined multiple times
+- Build errors due to incompatible function signatures
+
+### Files to Remove
+
+| Path                     | Size  | Reason                                            | Risk Level |
+| ------------------------ | ----- | ------------------------------------------------- | ---------- |
+| glfw-3.4.bin.WIN64/docs/ | ~10MB | Extensive HTML documentation - not needed in repo | LOW        |
+| glfw_mingw/              | ~50KB | Duplicate headers, unused                         | LOW        |
+| glfw_replacement.h       | ~3KB  | Conflicting with real GLFW, causing build errors  | MEDIUM     |
+
+### Strategy
+
+1. Keep `glfw-3.4.bin.WIN64/` (working GLFW implementation)
+2. Remove `glfw_mingw/` (duplicate)
+3. Remove `glfw_replacement.h` (conflicting)
+4. Update source files to use consistent GLFW headers
+5. Remove extensive documentation to reduce repo size
