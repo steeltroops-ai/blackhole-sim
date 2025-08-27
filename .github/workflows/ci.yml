@@ -1,0 +1,218 @@
+name: BlackHole Simulation CI/CD
+
+on:
+  push:
+    branches: [ main, develop, 'feature/*', 'cleanup/*', 'refactor/*' ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  BUILD_TYPE: Release
+  CTEST_OUTPUT_ON_FAILURE: 1
+
+jobs:
+  # Static Analysis and Code Quality
+  static-analysis:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-tidy cppcheck
+    
+    - name: Run clang-tidy
+      run: |
+        find src include -name "*.cpp" -o -name "*.hpp" | xargs clang-tidy --checks='-*,readability-*,performance-*,modernize-*' --
+    
+    - name: Run cppcheck
+      run: |
+        cppcheck --enable=all --inconclusive --std=c++17 --error-exitcode=1 src/ include/
+
+  # Build and Test on Multiple Platforms
+  build-test:
+    name: Build & Test
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        build_type: [Debug, Release]
+        include:
+          - os: ubuntu-latest
+            compiler: gcc
+            generator: "Unix Makefiles"
+          - os: windows-latest
+            compiler: msvc
+            generator: "Visual Studio 17 2022"
+          - os: macos-latest
+            compiler: clang
+            generator: "Unix Makefiles"
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Dependencies (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake ninja-build libgl1-mesa-dev libglu1-mesa-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
+    
+    - name: Install Dependencies (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew install cmake ninja
+    
+    - name: Setup MSVC (Windows)
+      if: matrix.os == 'windows-latest'
+      uses: microsoft/setup-msbuild@v1.3
+    
+    - name: Configure CMake
+      run: |
+        cmake -B build -G "${{ matrix.generator }}" -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+    
+    - name: Build
+      run: |
+        cmake --build build --config ${{ matrix.build_type }} --parallel
+    
+    - name: Run Tests
+      working-directory: build
+      run: |
+        ctest --build-config ${{ matrix.build_type }} --output-on-failure --parallel
+    
+    - name: Upload Build Artifacts
+      if: matrix.build_type == 'Release'
+      uses: actions/upload-artifact@v4
+      with:
+        name: blackhole-simulation-${{ matrix.os }}
+        path: |
+          build/BlackHoleSimulation*
+          build/*.dll
+        retention-days: 7
+
+  # Security Scanning
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run CodeQL Analysis
+      uses: github/codeql-action/init@v3
+      with:
+        languages: cpp
+    
+    - name: Build for CodeQL
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake libgl1-mesa-dev
+        cmake -B build -DCMAKE_BUILD_TYPE=Debug
+        cmake --build build --parallel
+    
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+
+  # Performance Benchmarking
+  benchmark:
+    name: Performance Benchmark
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake libgl1-mesa-dev valgrind
+    
+    - name: Build Release
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release
+        cmake --build build --parallel
+    
+    - name: Run Benchmarks
+      run: |
+        cd build
+        # Add benchmark commands here when available
+        echo "Benchmarks would run here"
+    
+    - name: Memory Check
+      run: |
+        cd build
+        # valgrind --tool=memcheck --leak-check=full ./BlackHoleSimulation --test-mode
+        echo "Memory checks would run here"
+
+  # Documentation Generation
+  documentation:
+    name: Generate Documentation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Doxygen
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y doxygen graphviz
+    
+    - name: Generate Documentation
+      run: |
+        # doxygen Doxyfile
+        echo "Documentation generation would happen here"
+    
+    - name: Deploy to GitHub Pages
+      if: success()
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/html
+
+  # Release Management
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [static-analysis, build-test, security-scan]
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Download Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: artifacts/**/*
+        generate_release_notes: true
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Notification
+  notify:
+    name: Notify Results
+    runs-on: ubuntu-latest
+    needs: [static-analysis, build-test, security-scan]
+    if: always()
+    
+    steps:
+    - name: Notify Success
+      if: needs.static-analysis.result == 'success' && needs.build-test.result == 'success' && needs.security-scan.result == 'success'
+      run: |
+        echo "✅ All checks passed! Build is ready for deployment."
+    
+    - name: Notify Failure
+      if: needs.static-analysis.result == 'failure' || needs.build-test.result == 'failure' || needs.security-scan.result == 'failure'
+      run: |
+        echo "❌ Some checks failed. Please review the logs."
+        exit 1
