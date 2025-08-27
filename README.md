@@ -80,36 +80,68 @@ cd build && ./BlackHoleSimulation
 - **Graphics Library**: GLFW 3.3+ (included)
 - **OpenGL Loader**: GLAD (included)
 
-## 🎮 Controls & Features
+## 🎮 Interactive Controls & Features
 
-### **Automatic Experience**
+### **🎬 Cinematic Experience**
 
-The simulation runs automatically with a cinematic orbital camera that smoothly moves around the black hole, showcasing all physics effects without user intervention.
+The simulation features an automatic orbital camera that smoothly moves around the black hole, providing cinematic views of all physics effects. The camera intelligently adjusts angles and distance to showcase the most dramatic visual elements.
 
-### **Keyboard Controls** (if enabled)
+### **🎛️ Real-Time Interactive Controls**
 
+**Visual Layer Toggles:**
+
+- **G**: Toggle spacetime grid (curved spacetime visualization with anime-style glow)
+- **A**: Toggle accretion disk (temperature-gradient disk: blue→yellow→orange→red)
+- **P**: Toggle particles (three orbiting particles with realistic physics)
+- **L**: Toggle gravitational lensing (Einstein's light ray bending effects)
+- **B**: Toggle black hole visibility (event horizon with neon blue glowing edge)
+
+**Animation Controls:**
+
+- **SPACE**: Pause/Resume animation (freeze time for detailed observation)
+- **H**: Show comprehensive help and controls list
 - **ESC**: Exit simulation
-- **Space**: Pause/Resume simulation
-- **R**: Reset simulation
-- **G**: Toggle spacetime grid
-- **P**: Toggle particles
-- **T**: Toggle particle trails
-- **L**: Toggle light rays
-- **A**: Toggle accretion disk
-- **B**: Toggle black hole
-- **U**: Toggle UI overlay
 
-## 🌌 What You'll See
+### **🔬 Real-Time Physics Visualization**
 
-When you run the simulation, experience:
+- **Schwarzschild Metric**: Accurate spacetime curvature effects
+- **Temperature Gradients**: Physics-based accretion disk coloring (T ∝ r^(-3/4))
+- **Orbital Mechanics**: Stable, elliptical, and escape trajectories
+- **Gravitational Redshift**: Color shifts near the event horizon
+- **Light Deflection**: Einstein's δφ = 4GM/(c²b) equation visualized
 
-1. **🌟 Deep Space Environment**: Dark blue-black background with scattered stars
-2. **⚫ Central Black Hole**: Dark sphere representing the event horizon
-3. **🌀 Glowing Accretion Disk**: Rotating disk with temperature-based colors
-4. **📐 Curved Spacetime Grid**: Grid lines showing gravitational curvature
-5. **🔴🔵🟡 Orbiting Particles**: Three colored particles in different orbits
-6. **💫 Light Ray Bending**: Bright rays showing gravitational lensing
-7. **🎥 Cinematic Camera**: Smooth orbital movement with dynamic angles
+## 🌌 Enhanced Visual Experience
+
+### **🎨 Anime-Style Aesthetics with Scientific Accuracy**
+
+**Visual Elements:**
+
+1. **🌟 Cosmic Background**: Deep space environment with twinkling stars and subtle nebula colors
+2. **⚫ Black Hole Event Horizon**: Pure black sphere with dramatic neon blue/cyan glowing edge
+3. **🌀 Physics-Based Accretion Disk**:
+   - **Outer regions**: Cool blue (lower temperature ~10⁴ K)
+   - **Middle regions**: Warm yellow/orange (medium temperature ~10⁵ K)
+   - **Inner regions**: Hot white/red (highest temperature ~10⁶ K)
+   - **Realistic rotation** with Shakura-Sunyaev temperature profile
+4. **📐 Curved Spacetime Grid**: Dramatically warped grid showing Einstein's spacetime curvature
+   - **Teal-to-white gradient** with anime-style glow effects
+   - **Extreme curvature** near photon sphere (1.5 Schwarzschild radii)
+5. **🔴🔵🟡 Interactive Particles**: Three orbiting objects with distinct physics:
+   - **Green**: Stable circular orbit with solid trails
+   - **Orange**: Elliptical orbit with dynamic trajectories
+   - **Electric Blue**: Distant orbit with escape potential
+6. **💫 Gravitational Lensing**: Realistic light ray bending with redshift effects
+   - **Blue light** farther from black hole
+   - **Red light** closer to event horizon (gravitational redshift)
+7. **🎥 Cinematic Camera**: Intelligent orbital movement showcasing all effects
+
+### **🎭 Anime-Style Enhancements**
+
+- **Cel-shading effects** for clean, outlined visuals
+- **Bloom and glow** effects for high-energy phenomena
+- **Vibrant color palette** with enhanced saturation
+- **Smooth animations** with dramatic easing functions
+- **Pulsing effects** for bright objects and energy sources
 
 ## 🔬 Scientific Accuracy
 

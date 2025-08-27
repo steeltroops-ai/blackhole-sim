@@ -234,12 +234,12 @@ CMakeFiles/BlackHoleSimulation.dir/src/BlackHole.cpp.obj: C:/Omniverse/Projects/
   c:/mingw/lib/gcc/mingw32/6.3.0/include/stdint.h
 
 CMakeFiles/BlackHoleSimulation.dir/src/InputSystem.cpp.obj: C:/Omniverse/Projects/blackhole-sim/src/InputSystem.cpp \
+  C:/Omniverse/Projects/blackhole-sim/glfw-3.4.bin.WIN64/include/GLFW/glfw3.h \
   C:/Omniverse/Projects/blackhole-sim/include/InputSystem.hpp \
   c:/mingw/include/_mingw.h \
   c:/mingw/include/ctype.h \
   c:/mingw/include/errno.h \
   c:/mingw/include/gl/gl.h \
-  c:/mingw/include/glfw/glfw3.h \
   c:/mingw/include/locale.h \
   c:/mingw/include/msvcrtver.h \
   c:/mingw/include/sdkddkver.h \
@@ -731,6 +731,7 @@ CMakeFiles/BlackHoleSimulation.dir/src/PhysicsEngine.cpp.obj: C:/Omniverse/Proje
   c:/mingw/lib/gcc/mingw32/6.3.0/include/stdint.h
 
 CMakeFiles/BlackHoleSimulation.dir/src/RenderingEngine.cpp.obj: C:/Omniverse/Projects/blackhole-sim/src/RenderingEngine.cpp \
+  C:/Omniverse/Projects/blackhole-sim/glfw-3.4.bin.WIN64/include/GLFW/glfw3.h \
   C:/Omniverse/Projects/blackhole-sim/include/AccretionDisk.hpp \
   C:/Omniverse/Projects/blackhole-sim/include/BlackHole.hpp \
   C:/Omniverse/Projects/blackhole-sim/include/LightRay.hpp \
@@ -744,7 +745,6 @@ CMakeFiles/BlackHoleSimulation.dir/src/RenderingEngine.cpp.obj: C:/Omniverse/Pro
   c:/mingw/include/ctype.h \
   c:/mingw/include/dbt.h \
   c:/mingw/include/errno.h \
-  c:/mingw/include/glfw/glfw3.h \
   c:/mingw/include/locale.h \
   c:/mingw/include/math.h \
   c:/mingw/include/msvcrtver.h \
@@ -903,6 +903,7 @@ CMakeFiles/BlackHoleSimulation.dir/src/RenderingEngine.cpp.obj: C:/Omniverse/Pro
   c:/mingw/lib/gcc/mingw32/6.3.0/include/stdint.h
 
 CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.obj: C:/Omniverse/Projects/blackhole-sim/src/SimpleRenderingEngine.cpp \
+  C:/Omniverse/Projects/blackhole-sim/glfw-3.4.bin.WIN64/include/GLFW/glfw3.h \
   C:/Omniverse/Projects/blackhole-sim/include/AccretionDisk.hpp \
   C:/Omniverse/Projects/blackhole-sim/include/BlackHole.hpp \
   C:/Omniverse/Projects/blackhole-sim/include/LightRay.hpp \
@@ -916,7 +917,6 @@ CMakeFiles/BlackHoleSimulation.dir/src/SimpleRenderingEngine.cpp.obj: C:/Omniver
   c:/mingw/include/ctype.h \
   c:/mingw/include/dbt.h \
   c:/mingw/include/errno.h \
-  c:/mingw/include/glfw/glfw3.h \
   c:/mingw/include/locale.h \
   c:/mingw/include/math.h \
   c:/mingw/include/msvcrtver.h \
@@ -1846,11 +1846,11 @@ c:/mingw/lib/gcc/mingw32/6.3.0/include/stdint.h:
 
 C:/Omniverse/Projects/blackhole-sim/src/BlackHole.cpp:
 
+C:/Omniverse/Projects/blackhole-sim/glfw-3.4.bin.WIN64/include/GLFW/glfw3.h:
+
 c:/mingw/lib/gcc/mingw32/6.3.0/include/c++/chrono:
 
 c:/mingw/include/gl/gl.h:
-
-c:/mingw/include/glfw/glfw3.h:
 
 c:/mingw/lib/gcc/mingw32/6.3.0/include/c++/bits/hashtable.h:
 

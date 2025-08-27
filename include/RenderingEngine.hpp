@@ -11,7 +11,8 @@
 #include <unordered_map>
 #include <functional>
 
-struct GLFWwindow; // Forward declaration
+// GLFWwindow forward declaration - will be defined in glfw_replacement.h
+typedef void* GLFWwindow;
 
 #ifdef _WIN32
 #include <windows.h>

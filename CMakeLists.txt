@@ -18,13 +18,15 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 # Find required packages
 find_package(OpenGL REQUIRED)
 
+# Set GLFW paths manually
+set(GLFW_ROOT ${CMAKE_SOURCE_DIR}/glfw-3.4.bin.WIN64)
+set(GLFW_INCLUDE_DIR ${GLFW_ROOT}/include)
+set(GLFW_LIBRARY ${GLFW_ROOT}/lib-mingw-w64/libglfw3.a)
+
 # Include directories
 include_directories(${CMAKE_SOURCE_DIR}/include)
-include_directories(${CMAKE_SOURCE_DIR}/glfw-3.4.bin.WIN64/include)
+include_directories(${GLFW_INCLUDE_DIR})
 include_directories(${OPENGL_INCLUDE_DIRS})
-
-# Add GLFW library directory
-link_directories(${CMAKE_SOURCE_DIR}/glfw-3.4.bin.WIN64/lib-static-ucrt)
 
 # Source files
 set(SOURCES
@@ -44,12 +46,16 @@ set(SOURCES
 # Create main executable
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-# Note: test_3d_rendering.cpp was removed during cleanup
+# Copy GLFW DLL to build directory
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_SOURCE_DIR}/glfw-3.4.bin.WIN64/lib-mingw-w64/glfw3.dll"
+    $<TARGET_FILE_DIR:${PROJECT_NAME}>)
 
 # Link libraries for main executable
 target_link_libraries(${PROJECT_NAME}
     ${OPENGL_LIBRARIES}
-    glfw3
+    ${GLFW_LIBRARY}
     gdi32
     user32
     kernel32
