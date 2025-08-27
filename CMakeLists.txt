@@ -1,89 +1,194 @@
+# Modern CMakeLists.txt for BlackHole Simulation
+# Enterprise-grade C++ scientific computing project
 cmake_minimum_required(VERSION 3.16)
-project(BlackHoleSimulation VERSION 1.0.0 LANGUAGES C CXX)
 
-# Set C++ standard
+# Project definition with semantic versioning
+project(BlackHoleSimulation 
+    VERSION 1.0.0 
+    DESCRIPTION "Advanced Black Hole Physics Simulation with Anime-Style Visualization"
+    LANGUAGES C CXX
+)
+
+# Modern C++ standards
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Set build type if not specified
+# Build type configuration
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "RelWithDebInfo" "MinSizeRel")
 endif()
 
-# Compiler flags
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall -Wextra")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
+# Compiler-specific optimizations
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall -Wextra -Wpedantic -fsanitize=address,undefined")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -march=native -flto")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g -DNDEBUG")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    set(CMAKE_CXX_FLAGS_DEBUG "/Od /Zi /RTC1 /MDd")
+    set(CMAKE_CXX_FLAGS_RELEASE "/O2 /DNDEBUG /MD /GL")
+endif()
+
+# Export compile commands for static analysis tools
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Find required packages
 find_package(OpenGL REQUIRED)
+find_package(OpenMP)
 
-# Set GLFW paths manually
-set(GLFW_ROOT ${CMAKE_SOURCE_DIR}/glfw-3.4.bin.WIN64)
+# GLFW Configuration - Modern approach (updated for new structure)
+set(GLFW_ROOT ${CMAKE_SOURCE_DIR}/external/glfw-3.4.bin.WIN64)
 set(GLFW_INCLUDE_DIR ${GLFW_ROOT}/include)
-set(GLFW_LIBRARY ${GLFW_ROOT}/lib-mingw-w64/libglfw3.a)
 
-# Include directories
-include_directories(${CMAKE_SOURCE_DIR}/include)
-include_directories(${GLFW_INCLUDE_DIR})
-include_directories(${OPENGL_INCLUDE_DIRS})
+# Select appropriate GLFW library based on compiler
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    set(GLFW_LIBRARY ${GLFW_ROOT}/lib-mingw-w64/libglfw3.a)
+    set(GLFW_DLL ${GLFW_ROOT}/lib-mingw-w64/glfw3.dll)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(GLFW_LIBRARY ${GLFW_ROOT}/lib-vc2022/glfw3.lib)
+        set(GLFW_DLL ${GLFW_ROOT}/lib-vc2022/glfw3.dll)
+    endif()
+endif()
 
-# Source files
-set(SOURCES
-    src/main.cpp
-    src/PhysicsEngine.cpp
-    src/RenderingEngine.cpp
-    src/SimpleRenderingEngine.cpp
-    src/InputSystem.cpp
-    src/SimulationManager.cpp
-    src/BlackHole.cpp
-    src/Particle.cpp
-    src/LightRay.cpp
-    src/AccretionDisk.cpp
-    src/glad.c
+# Create GLFW imported target
+add_library(glfw3 STATIC IMPORTED)
+set_target_properties(glfw3 PROPERTIES
+    IMPORTED_LOCATION ${GLFW_LIBRARY}
+    INTERFACE_INCLUDE_DIRECTORIES ${GLFW_INCLUDE_DIR}
 )
 
-# Create main executable
-add_executable(${PROJECT_NAME} ${SOURCES})
+# Source files organization (updated paths)
+set(PHYSICS_SOURCES
+    src/core/physics_engine.cpp
+    src/physics/black_hole.cpp
+    src/physics/particle.cpp
+    src/physics/light_ray.cpp
+    src/physics/accretion_disk.cpp
+)
 
-# Copy GLFW DLL to build directory
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "${CMAKE_SOURCE_DIR}/glfw-3.4.bin.WIN64/lib-mingw-w64/glfw3.dll"
-    $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+set(RENDERING_SOURCES
+    src/rendering/rendering_engine.cpp
+    src/rendering/simple_rendering_engine.cpp
+    src/rendering/glad.c
+)
 
-# Link libraries for main executable
-target_link_libraries(${PROJECT_NAME}
+set(SYSTEM_SOURCES
+    src/simulation/input_system.cpp
+    src/simulation/simulation_manager.cpp
+    src/core/main.cpp
+)
+
+set(ALL_SOURCES ${PHYSICS_SOURCES} ${RENDERING_SOURCES} ${SYSTEM_SOURCES})
+
+# Main executable target
+add_executable(${PROJECT_NAME} ${ALL_SOURCES})
+
+# Target properties
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    OUTPUT_NAME "BlackHoleSimulation"
+    DEBUG_POSTFIX "_debug"
+)
+
+# Include directories (updated for new structure)
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${CMAKE_SOURCE_DIR}/include/blackhole_sim
+    ${CMAKE_SOURCE_DIR}/include
+    ${GLFW_INCLUDE_DIR}
+    ${OPENGL_INCLUDE_DIRS}
+)
+
+# Compiler definitions
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    $<$<CONFIG:Debug>:DEBUG_BUILD>
+    $<$<CONFIG:Release>:RELEASE_BUILD>
+    GLFW_INCLUDE_NONE  # Prevent GLFW from including OpenGL headers
+)
+
+# Link libraries
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    glfw3
     ${OPENGL_LIBRARIES}
-    ${GLFW_LIBRARY}
-    gdi32
-    user32
-    kernel32
-    opengl32
-    shell32
-    ole32
-    uuid
-    winmm
+    $<$<PLATFORM_ID:Windows>:gdi32>
+    $<$<PLATFORM_ID:Windows>:user32>
+    $<$<PLATFORM_ID:Windows>:kernel32>
+    $<$<PLATFORM_ID:Windows>:shell32>
+    $<$<PLATFORM_ID:Windows>:ole32>
+    $<$<PLATFORM_ID:Windows>:uuid>
+    $<$<PLATFORM_ID:Windows>:winmm>
 )
 
-# Note: test_3d_rendering target removed during cleanup
+# OpenMP support
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(${PROJECT_NAME} PRIVATE OpenMP::OpenMP_CXX)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE OPENMP_ENABLED)
+endif()
 
-# Link OpenMP if available
-# if(OpenMP_CXX_FOUND)
-#     target_link_libraries(${PROJECT_NAME} OpenMP::OpenMP_CXX)
-# endif()
+# Copy GLFW DLL for Windows
+if(WIN32 AND GLFW_DLL)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${GLFW_DLL}"
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMENT "Copying GLFW DLL to output directory"
+    )
+endif()
 
 # Enable testing
 enable_testing()
-
-# Add tests subdirectory
 add_subdirectory(tests)
 
-# Installation
-install(TARGETS ${PROJECT_NAME} DESTINATION bin)
-install(DIRECTORY docs/ DESTINATION share/doc/${PROJECT_NAME})
+# Installation rules
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION bin
+    COMPONENT Runtime
+)
 
-# Print build information
+install(DIRECTORY docs/
+    DESTINATION share/doc/${PROJECT_NAME}
+    COMPONENT Documentation
+    OPTIONAL
+)
+
+# CPack configuration for packaging
+set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY ${PROJECT_DESCRIPTION})
+set(CPACK_PACKAGE_VENDOR "BlackHole Simulation Team")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
+
+include(CPack)
+
+# Development tools integration
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    # Add custom targets for development
+    find_program(CLANG_TIDY_EXE NAMES "clang-tidy")
+    if(CLANG_TIDY_EXE)
+        add_custom_target(clang-tidy
+            COMMAND ${CLANG_TIDY_EXE} ${ALL_SOURCES} -- -I${CMAKE_SOURCE_DIR}/include
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMENT "Running clang-tidy"
+        )
+    endif()
+    
+    find_program(CLANG_FORMAT_EXE NAMES "clang-format")
+    if(CLANG_FORMAT_EXE)
+        add_custom_target(format
+            COMMAND ${CLANG_FORMAT_EXE} -i ${ALL_SOURCES}
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMENT "Formatting source code"
+        )
+    endif()
+endif()
+
+# Print build configuration
+message(STATUS "=== BlackHole Simulation Build Configuration ===")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "C++ standard: ${CMAKE_CXX_STANDARD}")
+message(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "OpenMP found: ${OpenMP_CXX_FOUND}")
+message(STATUS "GLFW library: ${GLFW_LIBRARY}")
+message(STATUS "Install prefix: ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "===============================================")

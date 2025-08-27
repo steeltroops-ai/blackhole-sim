@@ -38,8 +38,8 @@ A **scientifically accurate**, real-time 3D simulation of black hole physics usi
 ### **Option 1: One-Click Launch (Windows)**
 
 ```batch
-# Double-click this file for instant simulation:
-launch_blackhole_simulation.bat
+# Double-click this file for instant simulation (updated path):
+scripts\launch_blackhole_simulation.bat
 ```
 
 ### **Option 2: Build from Source**
@@ -47,21 +47,40 @@ launch_blackhole_simulation.bat
 #### **Windows**
 
 ```batch
-# Build the project
-build_windows.bat
+# Build the project (updated path)
+scripts\build_windows.bat
 
-# Run the simulation
-launch_blackhole_simulation.bat
+# Run the simulation (updated path)
+scripts\launch_blackhole_simulation.bat
 ```
 
 #### **Linux/macOS/WSL**
 
 ```bash
-# Build the project
-./build.sh
+# Build the project (updated path)
+scripts/build.sh
 
 # Run the simulation
 cd build && ./BlackHoleSimulation
+```
+
+### **Option 3: Professional Development Setup**
+
+```bash
+# Complete setup with comprehensive documentation
+git clone <repository-url>
+cd blackhole-sim
+
+# Read technical documentation
+cat TECHNICAL_SPECIFICATION.md    # Architecture overview
+cat BUILD_INSTRUCTIONS.md         # Detailed build guide
+cat TROUBLESHOOTING_GUIDE.md      # Issue resolution
+
+# Modern CMake build process
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+cmake --build . --config Release
+ctest --output-on-failure         # Run tests
 ```
 
 ## 📋 Requirements
@@ -156,23 +175,50 @@ The simulation demonstrates **real physics** including:
 ## 📁 Project Structure
 
 ```
-blackhole-sim/
-├── 📁 src/                    # Source code
-│   ├── main.cpp               # Application entry point
-│   ├── SimulationManager.cpp  # Main simulation loop
-│   ├── SimpleRenderingEngine.cpp # 3D rendering engine
-│   ├── PhysicsEngine.cpp      # Physics calculations
-│   ├── BlackHole.cpp          # Black hole implementation
-│   └── ...                    # Other physics components
-├── 📁 include/                # Header files
-├── 📁 tests/                  # Unit tests
-├── 📁 docs/                   # Documentation
-├── 📁 glfw-3.4.bin.WIN64/     # GLFW library (Windows)
-├── 🔧 CMakeLists.txt          # Build configuration
-├── 🚀 launch_blackhole_simulation.bat # Windows launcher
-├── 🔨 build_windows.bat       # Windows build script
-├── 🔨 build.sh               # Linux/macOS build script
-└── 📖 README.md              # This file
+blackhole-sim/                           # Professional C++ Scientific Computing Structure
+├── 📁 src/                              # Implementation files (.cpp)
+│   ├── core/                           # Core engine components
+│   │   ├── main.cpp                    # Application entry point
+│   │   └── physics_engine.cpp          # Central physics coordination
+│   ├── physics/                        # Physics simulation models
+│   │   ├── black_hole.cpp              # Schwarzschild black hole implementation
+│   │   ├── particle.cpp                # Massive particle dynamics
+│   │   ├── light_ray.cpp               # Null geodesic calculations
+│   │   └── accretion_disk.cpp          # Accretion disk physics
+│   ├── rendering/                      # Graphics and visualization
+│   │   ├── rendering_engine.cpp        # OpenGL rendering pipeline
+│   │   ├── simple_rendering_engine.cpp # Anime-style effects
+│   │   └── glad.c                      # OpenGL function loader
+│   ├── simulation/                     # Simulation management
+│   │   ├── simulation_manager.cpp      # Main simulation loop
+│   │   └── input_system.cpp            # User input handling
+│   └── utils/                          # Utility functions
+├── 📁 include/blackhole_sim/           # Public header files (namespace-organized)
+├── 📁 tests/                           # Testing framework
+│   ├── unit/                          # Unit tests
+│   ├── integration/                   # Integration tests
+│   └── benchmarks/                    # Performance benchmarks
+├── 📁 docs/                            # Documentation
+│   ├── api/                           # API documentation
+│   ├── physics/                       # Physics model documentation
+│   └── examples/                      # Usage examples
+├── 📁 assets/                          # Resources
+│   ├── shaders/                       # GLSL shader files
+│   ├── textures/                      # Texture assets
+│   └── data/                          # Physics data files
+├── 📁 scripts/                         # Build and utility scripts
+│   ├── build_windows.bat             # Windows build script
+│   ├── build.sh                      # Linux/macOS build script
+│   └── launch_blackhole_simulation.bat # Windows launcher
+├── 📁 external/                        # Third-party dependencies
+│   └── glfw-3.4.bin.WIN64/           # GLFW library (Windows)
+├── 📁 build/                           # Build artifacts (gitignored)
+├── 🔧 CMakeLists.txt                   # Modern CMake configuration
+├── 📋 TECHNICAL_SPECIFICATION.md       # Complete technical documentation
+├── 🔨 BUILD_INSTRUCTIONS.md            # Comprehensive build guide
+├── 🛠️ TROUBLESHOOTING_GUIDE.md         # Issue resolution guide
+├── 📖 DEVELOPMENT.md                   # Development procedures
+└── 📖 README.md                       # This file
 ```
 
 ## 🛠️ Troubleshooting
