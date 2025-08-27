@@ -1,1 +1,0 @@
-  -L"C:/Omniverse/Projects/blackhole-sim/glfw-3.3.10.bin.WIN32/lib-static-ucrt"  -lopengl32 -lglu32 -lglfw3 -lgdi32 -luser32 -lkernel32 -lopengl32 -lshell32 -lole32 -luuid -lwinmm -lglu32 -lglfw3 -lgdi32 -luser32 -lkernel32 -lshell32 -lole32 -luuid -lwinmm -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 

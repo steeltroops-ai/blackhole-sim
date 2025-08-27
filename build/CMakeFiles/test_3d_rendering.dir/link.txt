@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\test_3d_rendering.dir/objects.a
-C:\MinGW\bin\ar.exe qc CMakeFiles\test_3d_rendering.dir/objects.a @CMakeFiles\test_3d_rendering.dir\objects1.rsp
-C:\MinGW\bin\c++.exe -O3 -DNDEBUG -Wl,--whole-archive CMakeFiles\test_3d_rendering.dir/objects.a -Wl,--no-whole-archive -o test_3d_rendering.exe -Wl,--out-implib,libtest_3d_rendering.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\test_3d_rendering.dir\linkLibs.rsp

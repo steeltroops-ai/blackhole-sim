@@ -1,3 +1,0 @@
-PhysicsTests 3 0.16618
-MinimalTest 3 0.1671
----
