@@ -3,7 +3,7 @@
  * @brief Implementation of the LightRay class
  */
 
-#include "LightRay.hpp"
+#include "blackhole_sim/light_ray.hpp"
 #include <cmath>
 #include <algorithm>
 #include <iostream>

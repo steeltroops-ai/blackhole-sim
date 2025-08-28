@@ -3,8 +3,8 @@
  * @brief Implementation of the BlackHole class
  */
 
-#include "BlackHole.hpp"
-#include "Vector3.hpp"
+#include "blackhole_sim/black_hole.hpp"
+#include "blackhole_sim/vector3.hpp"
 #include <cmath>
 #include <algorithm>
 #include <stdexcept>

@@ -12,8 +12,8 @@ echo This will launch a stunning 3D visualization of black hole physics
 echo including gravitational lensing, particle trajectories, and more.
 echo.
 
-REM Check if build directory exists
-if not exist "build" (
+REM Check if build directory exists (updated for scripts directory)
+if not exist "..\build" (
     echo ERROR: Build directory not found!
     echo Please run the build script first.
     echo.
@@ -21,10 +21,10 @@ if not exist "build" (
     exit /b 1
 )
 
-REM Check if executable exists
-if not exist "build\BlackHoleSimulation.exe" (
+REM Check if executable exists (updated for scripts directory)
+if not exist "..\build\BlackHoleSimulation.exe" (
     echo ERROR: BlackHoleSimulation.exe not found!
-    echo Please build the project first using: build_windows.bat
+    echo Please build the project first using: scripts\build_windows.bat
     echo.
     pause
     exit /b 1
@@ -49,8 +49,8 @@ echo - A: Toggle accretion disk
 echo - ESC or close window to exit
 echo.
 
-REM Change to build directory and run
-cd build
+REM Change to build directory and run (updated for scripts directory)
+cd ..\build
 echo Launching full 3D Black Hole Simulation...
 BlackHoleSimulation.exe
 

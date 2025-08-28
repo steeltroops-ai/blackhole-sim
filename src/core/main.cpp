@@ -6,7 +6,7 @@
  * It sets up the simulation manager and runs the main simulation loop.
  */
 
-#include "SimulationManager.hpp"
+#include "blackhole_sim/simulation_manager.hpp"
 #include <iostream>
 #include <exception>
 #include <cstdlib>

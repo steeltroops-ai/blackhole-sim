@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BlackHole.hpp"
+#include "black_hole.hpp"
 #include <array>
 #include <vector>
 #include <memory>

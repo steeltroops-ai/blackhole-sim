@@ -3,7 +3,7 @@
  * @brief Implementation of the Particle class
  */
 
-#include "Particle.hpp"
+#include "blackhole_sim/particle.hpp"
 #include <cmath>
 #include <algorithm>
 

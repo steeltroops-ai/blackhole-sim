@@ -3,8 +3,8 @@
  * @brief Implementation of the AccretionDisk class
  */
 
-#include "AccretionDisk.hpp"
-#include "BlackHole.hpp"
+#include "blackhole_sim/accretion_disk.hpp"
+#include "blackhole_sim/black_hole.hpp"
 #include <cmath>
 #include <algorithm>
 #include <iostream>

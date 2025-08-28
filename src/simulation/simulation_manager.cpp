@@ -3,15 +3,15 @@
  * @brief Implementation of the SimulationManager class
  */
 
-#include "SimulationManager.hpp"
-#include "PhysicsEngine.hpp"
-#include "RenderingEngine.hpp"
-#include "InputSystem.hpp"
-#include "BlackHole.hpp"
-#include "Particle.hpp"
-#include "LightRay.hpp"
-#include "AccretionDisk.hpp"
-#include "SimpleRenderer.h"
+#include "blackhole_sim/simulation_manager.hpp"
+#include "blackhole_sim/physics_engine.hpp"
+#include "blackhole_sim/rendering_engine.hpp"
+#include "blackhole_sim/input_system.hpp"
+#include "blackhole_sim/black_hole.hpp"
+#include "blackhole_sim/particle.hpp"
+#include "blackhole_sim/light_ray.hpp"
+#include "blackhole_sim/accretion_disk.hpp"
+#include "blackhole_sim/simple_renderer.h"
 
 #include <iostream>
 #include <fstream>

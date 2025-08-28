@@ -4,8 +4,8 @@
 #include <vector>
 #include <string>
 #include <cmath>
-#include "Vector3.hpp"
-#include "Vector4.hpp"
+#include "vector3.hpp"
+#include "vector4.hpp"
 
 namespace BlackHoleSim {
 

@@ -38,147 +38,180 @@ brew upgrade cmake
 CMake Error: Could not find GLFW library
 ```
 **Solution:**
+# Double-click this file for instant simulation (updated path):
+scripts\launch_blackhole_simulation.bat
+```
+### **Option 2: Build from Source**
+
+#### **Windows**
+```batch
+# Build the project (updated path)
+scripts\build_windows.bat
+
+# Run the simulation (updated path)
+scripts\launch_blackhole_simulation.bat
+```
+#### **Linux/macOS/WSL**
 ```bash
-# Verify GLFW path exists
-ls external/glfw-3.4.bin.WIN64/
+# Build the project (updated path)
+scripts/build.sh
 
-# If missing, restore from backup or re-download
-# Check CMakeLists.txt GLFW_ROOT path
+# Run the simulation
+cd build && ./BlackHoleSimulation
 ```
-
-#### **Error: OpenGL not found**
-```
-CMake Error: Could not find OpenGL
-```
-**Solution:**
+### **Option 3: Professional Development Setup**
 ```bash
-# Linux
-sudo apt install libgl1-mesa-dev libglu1-mesa-dev
+# Complete setup with comprehensive documentation
+git clone <repository-url>
+cd blackhole-sim
 
-# Windows - Update graphics drivers
-# macOS - Install Xcode command line tools
-xcode-select --install
+# Read technical documentation
+cat TECHNICAL_SPECIFICATION.md    # Architecture overview
+cat BUILD_INSTRUCTIONS.md         # Detailed build guide
+cat TROUBLESHOOTING_GUIDE.md      # Issue resolution
+
+# Modern CMake build process
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+cmake --build . --config Release
+ctest --output-on-failure         # Run tests
 ```
+## 📋 Requirements
 
-### **Compilation Errors**
+### **System Requirements**
 
-#### **Error: C++17 features not supported**
+- **OS**: Windows 10+, Linux, macOS
+- **Graphics**: OpenGL 3.3+ compatible GPU
+- **RAM**: 4GB minimum, 8GB recommended
+- **CPU**: Multi-core processor recommended
+
+### **Development Requirements**
+
+- **Compiler**: C++17 compatible (GCC 7+, Clang 5+, MSVC 2017+)
+- **Build System**: CMake 3.10+
+- **Graphics Library**: GLFW 3.3+ (included)
+- **OpenGL Loader**: GLAD (included)
+
+## 🎮 Interactive Controls & Features
+
+### **🎬 Cinematic Experience**
+
+The simulation features an automatic orbital camera that smoothly moves around the black hole, providing cinematic views of all physics effects. The camera intelligently adjusts angles and distance to showcase the most dramatic visual elements.
+
+### **🎛️ Real-Time Interactive Controls**
+
+**Visual Layer Toggles:**
+
+- **G**: Toggle spacetime grid (curved spacetime visualization with anime-style glow)
+- **A**: Toggle accretion disk (temperature-gradient disk: blue→yellow→orange→red)
+- **P**: Toggle particles (three orbiting particles with realistic physics)
+- **L**: Toggle gravitational lensing (Einstein's light ray bending effects)
+- **B**: Toggle black hole visibility (event horizon with neon blue glowing edge)
+
+**Animation Controls:**
+
+- **SPACE**: Pause/Resume animation (freeze time for detailed observation)
+- **H**: Show comprehensive help and controls list
+- **ESC**: Exit simulation
+
+### **🔬 Real-Time Physics Visualization**
+
+- **Schwarzschild Metric**: Accurate spacetime curvature effects
+- **Temperature Gradients**: Physics-based accretion disk coloring (T ∝ r^(-3/4))
+- **Orbital Mechanics**: Stable, elliptical, and escape trajectories
+- **Gravitational Redshift**: Color shifts near the event horizon
+- **Light Deflection**: Einstein's δφ = 4GM/(c²b) equation visualized
+
+## 🌌 Enhanced Visual Experience
+
+### **🎨 Anime-Style Aesthetics with Scientific Accuracy**
+
+**Visual Elements:**
+
+1. **🌟 Cosmic Background**: Deep space environment with twinkling stars and subtle nebula colors
+2. **⚫ Black Hole Event Horizon**: Pure black sphere with dramatic neon blue/cyan glowing edge
+3. **🌀 Physics-Based Accretion Disk**:
+   - **Outer regions**: Cool blue (lower temperature ~10⁴ K)
+   - **Middle regions**: Warm yellow/orange (medium temperature ~10⁵ K)
+   - **Inner regions**: Hot white/red (highest temperature ~10⁶ K)
+   - **Realistic rotation** with Shakura-Sunyaev temperature profile
+4. **📐 Curved Spacetime Grid**: Dramatically warped grid showing Einstein's spacetime curvature
+   - **Teal-to-white gradient** with anime-style glow effects
+   - **Extreme curvature** near photon sphere (1.5 Schwarzschild radii)
+5. **🔴🔵🟡 Interactive Particles**: Three orbiting objects with distinct physics:
+   - **Green**: Stable circular orbit with solid trails
+   - **Orange**: Elliptical orbit with dynamic trajectories
+   - **Electric Blue**: Distant orbit with escape potential
+6. **💫 Gravitational Lensing**: Realistic light ray bending with redshift effects
+   - **Blue light** farther from black hole
+   - **Red light** closer to event horizon (gravitational redshift)
+7. **🎥 Cinematic Camera**: Intelligent orbital movement showcasing all effects
+
+### **🎭 Anime-Style Enhancements**
+
+- **Cel-shading effects** for clean, outlined visuals
+- **Bloom and glow** effects for high-energy phenomena
+- **Vibrant color palette** with enhanced saturation
+- **Smooth animations** with dramatic easing functions
+- **Pulsing effects** for bright objects and energy sources
+
+## 🔬 Scientific Accuracy
+
+The simulation demonstrates **real physics** including:
+
+- **Schwarzschild Metric Effects**: Accurate spacetime curvature
+- **Gravitational Time Dilation**: Relativistic effects near the black hole
+- **Light Ray Deflection**: Einstein's prediction of light bending
+- **Orbital Mechanics**: Stable, elliptical, and escape trajectories
+- **Accretion Disk Dynamics**: Temperature gradients and matter flow
+
+## 📁 Project Structure
 ```
-error: 'std::optional' is not a member of 'std'
-```
-**Solution:**
-```bash
-# Verify compiler version
-g++ --version  # Should be 7.0+
-clang++ --version  # Should be 5.0+
-
-# Update compiler if needed
-sudo apt install gcc-9 g++-9  # Ubuntu
-```
-
-#### **Error: Missing header files**
-```
-fatal error: 'blackhole_sim/physics_engine.hpp' file not found
-```
-**Solution:**
-```bash
-# Verify include path structure
-ls include/blackhole_sim/
-
-# Check CMakeLists.txt include directories
-# Ensure all header files are in correct locations
-```
-
-#### **Error: Undefined reference to OpenGL functions**
-```
-undefined reference to 'glClear'
-```
-**Solution:**
-```bash
-# Linux - Install OpenGL development libraries
-sudo apt install libgl1-mesa-dev
-
-# Windows - Verify OpenGL32.lib linking
-# Check CMakeLists.txt OpenGL linking
-```
-
-## Runtime Issues
-
-### **Application Startup Problems**
-
-#### **Error: Failed to initialize GLFW**
-```
-ERROR: Failed to initialize GLFW
-```
-**Solution:**
-```bash
-# Check display environment (Linux)
-echo $DISPLAY
-
-# For headless systems, use virtual display
-Xvfb :1 -screen 0 1024x768x24 &
-export DISPLAY=:1
-
-# Windows - Update graphics drivers
-# Verify hardware acceleration is enabled
-```
-
-#### **Error: OpenGL context creation failed**
-```
-ERROR: Failed to create OpenGL context
-```
-**Solution:**
-```bash
-# Check OpenGL version support
-glxinfo | grep "OpenGL version"  # Linux
-
-# Update graphics drivers
-# Try software rendering (testing only)
-export LIBGL_ALWAYS_SOFTWARE=1
-
-# Reduce OpenGL requirements in code if needed
-```
-
-#### **Error: Shader compilation failed**
-```
-ERROR: Fragment shader compilation failed
-```
-**Solution:**
-```bash
-# Check OpenGL version compatibility
-# Verify shader source code syntax
-# Enable shader debugging in code
-
-# Run with verbose logging
-./BlackHoleSimulation --debug --verbose-shaders
-```
-
-### **Performance Issues**
-
-#### **Low Frame Rate (< 30 FPS)**
-**Diagnosis:**
-```bash
-# Check GPU utilization
-nvidia-smi  # NVIDIA
-radeontop   # AMD
-
-# Profile CPU usage
-top -p $(pgrep BlackHoleSimulation)
-```
-
-**Solutions:**
-```bash
-# Reduce simulation complexity
-./BlackHoleSimulation --particles=100 --quality=low
-
-# Enable GPU acceleration
-./BlackHoleSimulation --use-gpu
-
-# Build with optimizations
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-O3"
-```
-
-#### **High Memory Usage**
+blackhole-sim/                           # Professional C++ Scientific Computing Structure
+├── 📁 src/                              # Implementation files (.cpp)
+│   ├── core/                           # Core engine components
+│   │   ├── main.cpp                    # Application entry point
+│   │   └── physics_engine.cpp          # Central physics coordination
+│   ├── physics/                        # Physics simulation models
+│   │   ├── black_hole.cpp              # Schwarzschild black hole implementation
+│   │   ├── particle.cpp                # Massive particle dynamics
+│   │   ├── light_ray.cpp               # Null geodesic calculations
+│   │   └── accretion_disk.cpp          # Accretion disk physics
+│   ├── rendering/                      # Graphics and visualization
+│   │   ├── rendering_engine.cpp        # OpenGL rendering pipeline
+│   │   ├── simple_rendering_engine.cpp # Anime-style effects
+│   │   └── glad.c                      # OpenGL function loader
+│   ├── simulation/                     # Simulation management
+│   │   ├── simulation_manager.cpp      # Main simulation loop
+│   │   └── input_system.cpp            # User input handling
+│   └── utils/                          # Utility functions
+├── 📁 include/blackhole_sim/           # Public header files (namespace-organized)
+├── 📁 tests/                           # Testing framework
+│   ├── unit/                          # Unit tests
+│   ├── integration/                   # Integration tests
+│   └── benchmarks/                    # Performance benchmarks
+├── 📁 docs/                            # Documentation
+│   ├── api/                           # API documentation
+│   ├── physics/                       # Physics model documentation
+│   └── examples/                      # Usage examples
+├── 📁 assets/                          # Resources
+│   ├── shaders/                       # GLSL shader files
+│   ├── textures/                      # Texture assets
+│   └── data/                          # Physics data files
+├── 📁 scripts/                         # Build and utility scripts
+│   ├── build_windows.bat             # Windows build script
+│   ├── build.sh                      # Linux/macOS build script
+│   └── launch_blackhole_simulation.bat # Windows launcher
+├── 📁 external/                        # Third-party dependencies
+│   └── glfw-3.4.bin.WIN64/           # GLFW library (Windows)
+├── 📁 build/                           # Build artifacts (gitignored)
+├── 🔧 CMakeLists.txt                   # Modern CMake configuration
+├── 📋 TECHNICAL_SPECIFICATION.md       # Complete technical documentation
+├── 🔨 BUILD_INSTRUCTIONS.md            # Comprehensive build guide
+├── 🛠️ TROUBLESHOOTING_GUIDE.md         # Issue resolution guide
+├── 📖 DEVELOPMENT.md                   # Development procedures
+└── 📖 README.md                       # This file
+Memory Usage**
 **Diagnosis:**
 ```bash
 # Monitor memory usage

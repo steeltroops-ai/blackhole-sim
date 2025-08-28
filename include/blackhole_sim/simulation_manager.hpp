@@ -1,11 +1,11 @@
 #pragma once
 
-#include "PhysicsEngine.hpp"
-#include "RenderingEngine.hpp"
-#include "InputSystem.hpp"
-#include "BlackHole.hpp"
-#include "AccretionDisk.hpp"
-#include "Vector3.hpp"
+#include "physics_engine.hpp"
+#include "rendering_engine.hpp"
+#include "input_system.hpp"
+#include "black_hole.hpp"
+#include "accretion_disk.hpp"
+#include "vector3.hpp"
 #include <vector>
 #include <memory>
 #include <chrono>

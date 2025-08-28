@@ -6,8 +6,8 @@
 #include <vector>
 #include <string>
 
-// Forward declaration for GLFW types - will be defined in glfw_replacement.h
-typedef void* GLFWwindow;
+// Forward declaration for GLFW
+struct GLFWwindow;
 
 namespace BlackHoleSim {
 

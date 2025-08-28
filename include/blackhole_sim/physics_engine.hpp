@@ -1,8 +1,8 @@
 #pragma once
 
-#include "BlackHole.hpp"
-#include "Particle.hpp"
-#include "LightRay.hpp"
+#include "black_hole.hpp"
+#include "particle.hpp"
+#include "light_ray.hpp"
 #include <vector>
 #include <array>
 #include <memory>

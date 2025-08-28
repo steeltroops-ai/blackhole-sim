@@ -4,7 +4,7 @@
 #include <cmath>
 #include <limits>
 #include <utility>
-#include "Vector3.hpp"
+#include "vector3.hpp"
 
 namespace BlackHoleSim {
 

@@ -3,10 +3,10 @@
  * @brief Implementation of the PhysicsEngine class
  */
 
-#include "PhysicsEngine.hpp"
-#include "BlackHole.hpp"
-#include "Particle.hpp"
-#include "LightRay.hpp"
+#include "blackhole_sim/physics_engine.hpp"
+#include "blackhole_sim/black_hole.hpp"
+#include "blackhole_sim/particle.hpp"
+#include "blackhole_sim/light_ray.hpp"
 #include <cmath>
 #include <algorithm>
 #include <stdexcept>

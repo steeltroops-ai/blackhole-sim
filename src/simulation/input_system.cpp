@@ -1,4 +1,4 @@
-#include "InputSystem.hpp"
+#include "blackhole_sim/input_system.hpp"
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <algorithm>

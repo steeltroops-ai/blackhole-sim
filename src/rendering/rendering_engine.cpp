@@ -1,6 +1,6 @@
-#include "glad.h"
+#include "blackhole_sim/glad.h"
 #include <GLFW/glfw3.h>
-#include "RenderingEngine.hpp"
+#include "blackhole_sim/rendering_engine.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>

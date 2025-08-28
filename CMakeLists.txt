@@ -41,21 +41,22 @@ find_package(OpenMP)
 set(GLFW_ROOT ${CMAKE_SOURCE_DIR}/external/glfw-3.4.bin.WIN64)
 set(GLFW_INCLUDE_DIR ${GLFW_ROOT}/include)
 
-# Select appropriate GLFW library based on compiler
+# Select appropriate GLFW library based on compiler (try dynamic linking)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    set(GLFW_LIBRARY ${GLFW_ROOT}/lib-mingw-w64/libglfw3.a)
+    set(GLFW_LIBRARY ${GLFW_ROOT}/lib-mingw-w64/libglfw3dll.a)
     set(GLFW_DLL ${GLFW_ROOT}/lib-mingw-w64/glfw3.dll)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-        set(GLFW_LIBRARY ${GLFW_ROOT}/lib-vc2022/glfw3.lib)
+        set(GLFW_LIBRARY ${GLFW_ROOT}/lib-vc2022/glfw3dll.lib)
         set(GLFW_DLL ${GLFW_ROOT}/lib-vc2022/glfw3.dll)
     endif()
 endif()
 
-# Create GLFW imported target
-add_library(glfw3 STATIC IMPORTED)
+# Create GLFW imported target (dynamic)
+add_library(glfw3 SHARED IMPORTED)
 set_target_properties(glfw3 PROPERTIES
-    IMPORTED_LOCATION ${GLFW_LIBRARY}
+    IMPORTED_LOCATION ${GLFW_DLL}
+    IMPORTED_IMPLIB ${GLFW_LIBRARY}
     INTERFACE_INCLUDE_DIRECTORIES ${GLFW_INCLUDE_DIR}
 )
 
@@ -106,7 +107,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
     GLFW_INCLUDE_NONE  # Prevent GLFW from including OpenGL headers
 )
 
-# Link libraries
+# Link libraries (updated for GLFW static linking)
 target_link_libraries(${PROJECT_NAME} PRIVATE
     glfw3
     ${OPENGL_LIBRARIES}
@@ -117,6 +118,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     $<$<PLATFORM_ID:Windows>:ole32>
     $<$<PLATFORM_ID:Windows>:uuid>
     $<$<PLATFORM_ID:Windows>:winmm>
+    $<$<PLATFORM_ID:Windows>:imm32>
+    $<$<PLATFORM_ID:Windows>:version>
+    $<$<PLATFORM_ID:Windows>:setupapi>
 )
 
 # OpenMP support

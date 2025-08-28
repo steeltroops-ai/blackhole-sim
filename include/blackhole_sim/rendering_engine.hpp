@@ -1,9 +1,9 @@
 #pragma once
 
-#include "BlackHole.hpp"
-#include "Particle.hpp"
-#include "LightRay.hpp"
-#include "AccretionDisk.hpp"
+#include "black_hole.hpp"
+#include "particle.hpp"
+#include "light_ray.hpp"
+#include "accretion_disk.hpp"
 #include <vector>
 #include <memory>
 #include <array>
@@ -11,8 +11,8 @@
 #include <unordered_map>
 #include <functional>
 
-// GLFWwindow forward declaration - will be defined in glfw_replacement.h
-typedef void* GLFWwindow;
+// Forward declaration for GLFW
+struct GLFWwindow;
 
 #ifdef _WIN32
 #include <windows.h>
